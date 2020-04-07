@@ -1,0 +1,19 @@
+name = "Dance"
+uuid = "fc0ff973-d74e-417c-9681-260383068f65"
+authors = ["Chris Yoh Meyers <48554065+yoh-meyers@users.noreply.github.com>"]
+version = "0.0.1"
+
+[deps]
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
+HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
+JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
+OrderedCollections = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
+REPL = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
+
+[extras]
+SafeTestsets = "1bc83da4-3b8d-516f-aca4-4fe02f6d838f"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["SafeTestsets", "Test"]

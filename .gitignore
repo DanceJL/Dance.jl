@@ -1,0 +1,7 @@
+## OS or Editor files ##
+.DS_Store
+.idea/
+
+
+## Julia ##
+Manifest.toml
