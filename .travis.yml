@@ -1,0 +1,23 @@
+language: julia
+
+os:
+  - linux
+  - osx
+  - windows
+
+julia:
+  - 1.1
+  - 1.4
+  - nightly
+
+matrix:
+  allow_failures:
+    - julia: nightly
+
+sudo: false
+
+notifications:
+  email: false
+
+after_success:
+  - julia -e 'using Pkg; Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'
