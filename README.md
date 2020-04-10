@@ -68,9 +68,9 @@ Depending on environment, other files can be included under `settings` directory
 	```julia
 	## Add custom scripts here that need be run before launching Dance ##
 	function populate(dict::Dict)
-    	for (key, value) in dict
-        	ENV[String(key)] = value
-    	end
+    for (key, value) in dict
+        ENV[String(key)] = value
+    end
 	end
 
 	populate(Dance.Configuration.Settings)
