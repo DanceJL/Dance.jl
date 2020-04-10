@@ -4,6 +4,7 @@ import OrderedCollections
 
 import Dance.Configuration
 import Dance.Logger
+import Dance.URIUtils
 
 
 const GET= "GET"
@@ -18,17 +19,17 @@ mutable struct Route
     endpoint::String
     method::String
     path::String
+    has_regex::Bool
     action::Function
     html_file::String
     name::Symbol
 
     """
-        Route(;endpoint::String, method::String, path::String, action::Function, html_file::String, name::Symbol)
+        Route(;endpoint::String, method::String, path::String, has_regex::Bool, action::Function, html_file::String, name::Symbol)
 
-    Create new Route object
-    - Validate supplied Route parameters
+    Create new Route object, by validating supplied Route parameters
     """
-    function Route(;endpoint::String, method::String, path::String, action::Function, html_file::String, name::Symbol) :: Route
+    function Route(;endpoint::String, method::String, path::String, has_regex::Bool, action::Function, html_file::String, name::Symbol) :: Route
         error::String = ""
 
         if !(endpoint in ENDPOINTS)
@@ -39,6 +40,13 @@ mutable struct Route
             error = "Path already exists"
         else
             try
+                for item in split(path, "/")
+                    isa("r\"" * path * "\"", Regex)
+                end
+            catch e
+                error = "Invalid route regex format"
+            end
+            try
                 methods(action)
             catch e
                 error = "Action function not defined"
@@ -46,7 +54,7 @@ mutable struct Route
         end
 
         if length(error)==0
-            return new(endpoint, method, path, action, html_file, name)
+            return new(endpoint, method, path, has_regex, action, html_file, name)
         else
             Logger.log("Route construction for `$path`: $error")
         end
@@ -100,18 +108,36 @@ end
 Search ROUTES ordered dict for route component from specified path
 """
 function get_route(route_path::String) :: Union{Route, Nothing}
-    route::Union{Route, Nothing} = nothing
+    found_route::Union{Route, Nothing} = nothing
 
     # Remove trailing slash (if not index url)
     route_path = remove_trailing_slash(route_path)
 
-    if haskey(ROUTES, route_path)
-        route = ROUTES[route_path]
-    else
+    for (path, route) in ROUTES
+        if !route.has_regex
+            if path==route_path
+                found_route = route
+            end
+        else
+            request_path_number_of_segments::Int8 = length(URIUtils.get_path_segments(route_path))[1]
+            route_number_of_params::Int8 = length(collect(eachmatch(URIUtils.ROUTE_REGEX_BASIC_STRUCTURE, path)))
+            if route.has_regex && request_path_number_of_segments==route_number_of_params
+                try
+                    if isa(match(Regex(path), route_path), RegexMatch)
+                        found_route = route
+                    end
+                catch e
+                    nothing
+                end
+            end
+        end
+    end
+
+    if isnothing(found_route)
         Logger.log("Getting Route: route with path `$route_path` not defined")
     end
 
-    return route
+    return found_route
 end
 
 
@@ -169,14 +195,19 @@ end
 
 
 """
-    route(path::String, action::Function; method::String=POST, endpoint=JSON, html_file::String=Configuration.Settings[:html_base_filename]*".html", name::Union{Symbol,Nothing}=nothing)
+    route(path::Union{Regex, String}, action::Function; method::String=POST, endpoint=JSON, html_file::String=Configuration.Settings[:html_base_filename]*".html", name::Union{Symbol,Nothing}=nothing)
 
 Create new Route and add to ROUTES ordered dict
+- If path is Regex, convert to String for storage (Route has `has_regex` field)
 - Remove trailing slash
 - If supplied name is nothing, generate from path and eventual number suffix
 """
-function route(path::String, action::Function; method::String=POST, endpoint=JSON, html_file::String=Configuration.Settings[:html_base_filename]*".html", name::Union{Symbol,Nothing}=nothing) :: OrderedCollections.OrderedDict{String, Route}
+function route(path::Union{Regex, String}, action::Function; method::String=POST, endpoint=JSON, html_file::String=Configuration.Settings[:html_base_filename]*".html", name::Union{Symbol,Nothing}=nothing) :: OrderedCollections.OrderedDict{String, Route}
+    has_regex::Bool = isa(path, Regex)
 
+    if has_regex
+        path::String = replace(rstrip(string(path), '"'), "r\""=>"")
+    end
     path = remove_trailing_slash(path)
 
     # No `name` param supplied
@@ -184,7 +215,7 @@ function route(path::String, action::Function; method::String=POST, endpoint=JSO
         name = create_route_name_from_path(path)
     end
 
-    push!(ROUTES, path => Route(endpoint=endpoint, method=method, path=path, action=action, html_file=html_file, name=name))
+    push!(ROUTES, path => Route(endpoint=endpoint, method=method, path=path, has_regex=has_regex, action=action, html_file=html_file, name=name))
 end
 
 end
