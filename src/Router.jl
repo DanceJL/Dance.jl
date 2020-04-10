@@ -63,6 +63,32 @@ const ROUTES = OrderedCollections.OrderedDict{String, Route}()
 
 
 """
+    create_route_name_from_path(path::String) :: Symbol
+
+Create name from path string by:
+- Removing leading slash
+- Adding integer suffix to path
+"""
+function create_route_name_from_path(path::String) :: Symbol
+    idx::Int128 = 0
+    name= path[2:end]
+
+    # Index url case
+    if length(name)==0
+        name = "index"
+    end
+
+    name_symbol::Symbol = Symbol(name)
+    while haskey(ROUTES, name_symbol)
+        idx += 1
+        name_symbol = Symbol(name, "$idx")
+    end
+
+    return name_symbol
+end
+
+
+"""
     delete_routes!()
 
 Empty ROUTES ordered dict
@@ -143,20 +169,9 @@ Create new Route and add to ROUTES ordered dict
 - If supplied name is nothing, generate from path and eventual number suffix
 """
 function route(path::String, action::Function; method::String=POST, endpoint=JSON, html_file::String=Configuration.Settings[:html_base_filename]*".html", name::Union{Symbol,Nothing}=nothing) :: OrderedCollections.OrderedDict{String, Route}
+    # No `name` param supplied
     if isnothing(name)
-        idx::Int128 = 0
-        name = path[2:end]
-
-        # Index url case
-        if length(name)==0
-            name = "index"
-        end
-
-        name = Symbol(name)
-        while haskey(ROUTES, name)
-            idx += 1
-            name = Symbol(path, "$idx")
-        end
+        name = create_route_name_from_path(path)
     end
 
     push!(ROUTES, path => Route(endpoint=endpoint, method=method, path=path, action=action, html_file=html_file, name=name))
