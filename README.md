@@ -90,9 +90,12 @@ Routes can be included in main routes file (`routes.jl` by default), as follows:
 ```julia
 route(path::String, action::Function; method::String=POST, endpoint=JSON, html_file::String=Configuration.Settings[:html_base_filename]*".html", name::Union{Symbol,Nothing}=nothing)
 ```
-Just `path`and `function` are mandatory, *kwargs* can overwrite default values as necessary.
 
-Named urls are possible by specifying `name`, though including them in static HTML output is a pending feature.
+- Just `path`and `function` are mandatory, *kwargs* can overwrite default values as necessary.
+
+That said, note that:
+- Adding an ending slash (`/`) tp `path` is optional, as incoming requests will have pending slash stripped.
+- Named urls are possible by specifying `name`, though including them in static HTML output is a pending feature.
 
 Please see:
 
