@@ -5,7 +5,7 @@ import JSON
 
 import Dance.Configuration
 import Dance.Logger
-import Dance.Utils
+import Dance.PayloadUtils
 
 
 """
@@ -17,7 +17,7 @@ function populate(;html_file::String="", data::Union{DataFrames.DataFrame, Dict,
     output_data::String = ""
 
     if isa(data, DataFrames.DataFrame)
-        output_data = JSON.json(Utils.convert_dataframe_to_array(data))
+        output_data = JSON.json(PayloadUtils.convert_dataframe_to_array(data))
     elseif isa(data, Dict)
         output_data = JSON.json(data)
     else

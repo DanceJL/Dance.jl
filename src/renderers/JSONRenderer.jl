@@ -4,7 +4,7 @@ import DataFrames
 import JSON
 
 import Dance.Logger
-import Dance.Utils
+import Dance.PayloadUtils
 
 
 const HTTP_STATUS_UNAUTHORIZED = "Unauthorized"
@@ -52,7 +52,7 @@ function render(;headers::Dict, status_code::Int64, data::Union{DataFrames.DataF
         end
     else
         if isa(data, DataFrames.DataFrame)
-            body = Utils.convert_dataframe_to_array(data)
+            body = PayloadUtils.convert_dataframe_to_array(data)
         else
             body = data
         end

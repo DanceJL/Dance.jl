@@ -7,7 +7,7 @@ import Dance.Configuration
 import Dance.CoreRenderer
 import Dance.Logger
 import Dance.Router
-import Dance.Utils
+import Dance.PayloadUtils
 
 
 const OUTPUT_DATA_FORMATS = Union{DataFrames.DataFrame, Dict, String}
@@ -47,7 +47,7 @@ function process_backed_function(;route::Router.Route, payload::String) :: Dict{
         try
             json_decoded_data::Union{Array{Any,1}, Dict} = JSON.parse(payload)
             if isa(json_decoded_data, Array{Any,1})
-                received_data = Utils.convert_array_to_dataframe(json_decoded_data)
+                received_data = PayloadUtils.convert_array_to_dataframe(json_decoded_data)
             else
                 received_data = json_decoded_data
             end
