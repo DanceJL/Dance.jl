@@ -10,7 +10,7 @@ routes_html("json")
 project_settings_and_launch()
 
 
-## Test all routes with pending slash, to sensure is removed ##
+## Test all routes with pending slash, to ensure is removed ##
 @testset "HTTP.listen" begin
     @async Dance.launch(true)
 
@@ -30,13 +30,14 @@ project_settings_and_launch()
         [4, "M"]
     ]
 
+    # Test int url param
     body_dict::Dict = Dict("b" => "abc")
-    r = HTTP.request("POST", "http://127.0.0.1:8000/post/dict/", [], JSON.json(body_dict))
+    r = HTTP.request("POST", "http://127.0.0.1:8000/post/dict/12", [], JSON.json(body_dict))
     @test r.status==200
     compare_http_header(r.headers, "content_type", "application/json")
-    @test JSON.parse(extract_json_content(r.body))==body_dict
+    @test JSON.parse(extract_json_content(r.body))==Dict("b" => 12)
 
-    # Here we set Header value in backend
+    # Test setting Header value in backend
     body_df::Array = [
         ["A", "B"],
         [1, "M"],

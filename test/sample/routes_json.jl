@@ -18,13 +18,15 @@ function post_df(df::DataFrames.DataFrame) :: Tuple{DataFrames.DataFrame, Dict}
 end
 
 
-function post_dict(dict::Dict) :: Dict
+function post_dict(params_dict::Dict{Symbol, Any}, dict::Dict) :: Dict
+    for key in keys(dict)
+        dict[key] = params_dict[:value]
+    end
     return dict
 end
 
 
 route("/dict", get_dict; method=GET)
 route("/dataframe", get_df; method=GET)
-
-route("/post/dict", post_dict)
+route(r"/post/dict/(?<value>\d{2})", post_dict)
 route("/post/dataframe", post_df)
