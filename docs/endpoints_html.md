@@ -91,25 +91,3 @@ HTML output for above routes, will become:
 
 => To parse the JSON string under `<div id="js-dance-json-data">` HTML tag, one has to do so via JavaScript script.
 For instance with jQuery, one would use `jQuery.parseJSON()` function.
-
-## 2 - Optional HTTP Header
-
-One can set additional HTTP headers for the HTML endpoint.
-
-To do so simply add the desired headers as second output parameter of the function linked to route in question.
-Format must be `Dict{String, String}`.
-
-```julia
-import DataFrames
-
-using Dance.Router
-
-
-function get_df(df::DataFrames.DataFrame) :: Tuple{DataFrames.DataFrame, Dict}
-    return df, Dict("foo" => "bar")
-end
-
-route("/dataframe", get_df; method=GET, endpoint=HTML)
-```
-
-This will set `foo` HTTP header to value of `bar`.
