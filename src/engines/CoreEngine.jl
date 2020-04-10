@@ -8,6 +8,7 @@ import Dance.CoreRenderer
 import Dance.Logger
 import Dance.Router
 import Dance.PayloadUtils
+import Dance.URIUtils
 
 
 const OUTPUT_DATA_FORMATS = Union{DataFrames.DataFrame, Dict, String}
@@ -24,7 +25,54 @@ include("HTTPEngine.jl")
 
 
 """
-    process_backed_function(;route::Router.Route, payload::String)
+    build_route_params_dict(;request_route_segments::Array{String, 1}, route_path::String)
+
+Build dict of route params and corresponding values, by:
+- Parsing route.path for only segment sections
+- Looking-up request route segments at corresponding index
+"""
+function build_route_params_dict(;request_route_segments::Array{String, 1}, route_path::String) :: Dict
+    route_params_dict::Dict{Symbol, Any} = Dict()
+
+    for (idx, item) in enumerate(collect(eachmatch(URIUtils.ROUTE_REGEX_PARAM_ONLY, route_path)))
+        index::String = lstrip(split(item.match, ">")[1], '<')
+        value::Any = request_route_segments[idx]
+        if tryparse(Float64, value) isa Number
+            if tryparse(Int64, value) !== nothing
+                value = parse(Int64, value)
+            else
+                value = parse(Float64, value)
+            end
+        end
+        route_params_dict[Symbol(index)] = value
+    end
+
+    return route_params_dict
+end
+
+
+"""
+    map_route_function_output()
+
+Output from route.action can contain optional HTTP Headers params dict
+"""
+function map_route_function_output(output::Union{Tuple, OUTPUT_DATA_FORMATS})
+    data::OUTPUT_DATA_FORMATS = ""
+    headers::Dict = Dict()
+
+    if isa(output, Tuple)
+        data = output[1]
+        headers = output[2]
+    else
+        data = output
+    end
+
+    return headers, data
+end
+
+
+"""
+    process_backed_function(;route::Router.Route, route_segments::Array{String, 1}, payload::String)
 
 2 main cases
 
@@ -35,12 +83,13 @@ If error during process, render 500 response
 
 Render 400 if badly supplied payload data
 """
-function process_backed_function(;route::Router.Route, payload::String) :: Dict{Symbol, Union{Dict, Int64, String}}
+function process_backed_function(;route::Router.Route, route_segments::Array{String, 1}, payload::String) :: Dict{Symbol, Union{Dict, Int64, String}}
     data::OUTPUT_DATA_FORMATS = ""
     headers::Dict = Dict()
     output::Union{Tuple, OUTPUT_DATA_FORMATS} = ""
     received_data::Union{DataFrames.DataFrame, Dict} = Dict()
     rendered_dict::Dict{Symbol, Union{Dict, Int64, String}} = Dict()
+    route_params_dict::Dict{Symbol, Any} = Dict()
 
     if route.endpoint==Router.JSON && length(payload)>0
         can_proceed::Bool = false
@@ -57,14 +106,13 @@ function process_backed_function(;route::Router.Route, payload::String) :: Dict{
         end
         if can_proceed
             try
-                # Output can contain optional HTTP Headers params dict
-                output = route.action(received_data)
-                if isa(output, Tuple)
-                    data = output[1]
-                    headers = output[2]
+                if route.has_regex
+                    route_params_dict = build_route_params_dict(;request_route_segments=route_segments, route_path=route.path)
+                    output = route.action(route_params_dict, received_data)
                 else
-                    data = output
+                    output = route.action(received_data)
                 end
+                headers, data = map_route_function_output(output)
                 rendered_dict = render_200(;headers=headers, endpoint=route.endpoint, data=data, html_file=route.html_file)
             catch e
                 rendered_dict = render_500(;endpoint=route.endpoint, data=e, html_file=route.html_file, request_path=route.path)
@@ -72,14 +120,13 @@ function process_backed_function(;route::Router.Route, payload::String) :: Dict{
         end
     else
         try
-            # Output can contain optional HTTP Headers params dict
-            output = route.action()
-            if isa(output, Tuple)
-                data = output[1]
-                headers = output[2]
+            if route.has_regex
+                route_params_dict = build_route_params_dict(;request_route_segments=route_segments, route_path=route.path)
+                output = route.action(route_params_dict)
             else
-                data = output
+                output = route.action()
             end
+            headers, data = map_route_function_output(output)
             rendered_dict = render_200(;headers=headers, endpoint=route.endpoint, data=data, html_file=route.html_file)
         catch e
             rendered_dict = render_500(;endpoint=route.endpoint, data=e, html_file=route.html_file, request_path=route.path)
@@ -171,13 +218,18 @@ Arguments:
 """
 function render(;request_headers::Array, request_method::String, request_path::String, request_payload::String)
     rendered_dict::Dict{Symbol, Union{Dict, Int64, String}} = Dict()
+    request_route_segments::Array{String, 1} = []
+
     route::Union{Router.Route, Nothing} = Router.get_route(request_path)
 
     if isa(route, Router.Route)
         try
             ## Check if method allowed ##
             if route.method==request_method
-                rendered_dict = process_backed_function(;route=route, payload=request_payload)
+                if route.has_regex
+                    request_route_segments = URIUtils.get_path_param_segments(;request_path=request_path, route_path=route.path)
+                end
+                rendered_dict = process_backed_function(;route=route, route_segments=request_route_segments, payload=request_payload)
             else
                 rendered_dict = render_405(;endpoint=route.endpoint, html_file=route.html_file)
             end
