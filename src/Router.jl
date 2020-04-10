@@ -26,16 +26,10 @@ mutable struct Route
         Route(;endpoint::String, method::String, path::String, action::Function, html_file::String, name::Symbol)
 
     Create new Route object
-    - Remove trailing slash
     - Validate supplied Route parameters
     """
     function Route(;endpoint::String, method::String, path::String, action::Function, html_file::String, name::Symbol) :: Route
         error::String = ""
-
-        # Remove trailing slash (if not index url)
-        if length(path)>1 && path[end]=='/'
-            path = chop(path)
-        end
 
         if !(endpoint in ENDPOINTS)
             error = "Invalid endpoint. Must be \"HTML\" or \"JSON\""
@@ -109,9 +103,7 @@ function get_route(route_path::String) :: Union{Route, Nothing}
     route::Union{Route, Nothing} = nothing
 
     # Remove trailing slash (if not index url)
-    if length(route_path)>1 && route_path[end]=='/'
-        route_path = chop(route_path)
-    end
+    route_path = remove_trailing_slash(route_path)
 
     if haskey(ROUTES, route_path)
         route = ROUTES[route_path]
@@ -163,12 +155,30 @@ end
 
 
 """
+    remove_trailing_slash(path::String)
+
+Remove eventual trailing slash, if not index url
+"""
+function remove_trailing_slash(path::String) :: String
+    if length(path)>1 && path[end]=='/'
+        path = chop(path)
+    end
+
+    return path
+end
+
+
+"""
     route(path::String, action::Function; method::String=POST, endpoint=JSON, html_file::String=Configuration.Settings[:html_base_filename]*".html", name::Union{Symbol,Nothing}=nothing)
 
 Create new Route and add to ROUTES ordered dict
+- Remove trailing slash
 - If supplied name is nothing, generate from path and eventual number suffix
 """
 function route(path::String, action::Function; method::String=POST, endpoint=JSON, html_file::String=Configuration.Settings[:html_base_filename]*".html", name::Union{Symbol,Nothing}=nothing) :: OrderedCollections.OrderedDict{String, Route}
+
+    path = remove_trailing_slash(path)
+
     # No `name` param supplied
     if isnothing(name)
         name = create_route_name_from_path(path)
