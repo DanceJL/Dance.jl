@@ -94,6 +94,7 @@ route(path::String, action::Function; method::String=POST, endpoint=JSON, html_f
 - Just `path`and `function` are mandatory, *kwargs* can overwrite default values as necessary.
 
 That said, note that:
+- `path` can either be fixed string or contain PCRE regex containing parameter names.
 - Adding an ending slash (`/`) tp `path` is optional, as incoming requests will have pending slash stripped.
 - Named urls are possible by specifying `name`, though including them in static HTML output is a pending feature.
 

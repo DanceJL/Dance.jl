@@ -1,5 +1,48 @@
 # Common Parameters
 
+## 1 - Regex Parameters
+
+Dance being a web framework, routes can of course contain parameters.
+
+Format must follow  PCRE regex containing parameter names.
+
+Example routes can be:
+
+```julia
+function dict_1(params_dict::Dict{Symbol, Any}) :: Dict
+    return Dict(:a => params_dict[:value])
+end
+
+
+function dict_2(params_dict::Dict{Symbol, Any}) :: Dict
+    return Dict(Symbol(params_dict[:key]) => params_dict[:value])
+end
+
+
+function post_dict(params_dict::Dict{Symbol, Any}, dict::Dict) :: Dict
+    for key in keys(dict)
+        dict[key] = params_dict[:value]
+    end
+    return dict
+end
+
+
+
+route(r"/dict/(?<value>\d.)", dict_1; method=GET, endpoint=HTML)
+route(r"/dict/(?<key>\w+)/(?<value>\d{3})", dict_2; method=GET, endpoint=HTML)
+route(r"/post/dict/(?<value>\d{3})", post_2)
+```
+
+As you can see are supported:
+- decimals
+- integers
+- strings
+
+**Note that**:
+
+- Function routes params dict is **first input parameter, in case of JSON post route type**.
+- Also format of route params dict is **Dict{Symbol, Any}**.
+
 ## 2 - Optional HTTP Header
 
 One can set additional HTTP headers for both HTML and JSON API endpoints.
