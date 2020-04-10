@@ -4,6 +4,7 @@ import REPL
 
 include("Configuration.jl")
 include("Logger.jl")
+include("utils/URIUtils.jl")
 include("Router.jl")
 include("utils/PayloadUtils.jl")
 include("renderers/HTMLRenderer.jl")
