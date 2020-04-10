@@ -98,9 +98,9 @@ That said, note that:
 - Named urls are possible by specifying `name`, though including them in static HTML output is a pending feature.
 
 Please see:
-
-- [JSON Endpoints](docs/endoints_json.md)
-- [HTML Endpoints](docs/endpoints_html.md)
+- [Common Parameters](docs/routes/common_parameters.md)
+- [JSON Endpoints](docs/routes/endoints_json.md)
+- [HTML Endpoints](docs/routes/endpoints_html.md)
 
 for all cases.
 
