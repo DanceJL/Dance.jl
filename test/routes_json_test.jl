@@ -6,7 +6,7 @@ include("./utils.jl")
 
 
 Dance.start_project("demo")
-routes_html("json")
+routes("json")
 project_settings_and_launch()
 
 

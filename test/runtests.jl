@@ -1,6 +1,6 @@
 #!/usr/bin/env julia
 
-using Dance, Test, SafeTestsets
+using Test, SafeTestsets
 
 
 @time begin

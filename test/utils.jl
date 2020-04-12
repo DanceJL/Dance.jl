@@ -1,6 +1,3 @@
-import Dance
-
-
 function compare_http_header(headers::Array, key::String, value::String) :: Nothing
     for item in headers
         if item[1]==key
@@ -52,7 +49,7 @@ end
 
 
 
-function routes_html(file_suffix::String) :: Nothing
+function routes(file_suffix::String) :: Nothing
     cd("demo")
     open("routes.jl", "w") do io_routes
         open("../sample/routes_" * file_suffix * ".jl") do io_file
