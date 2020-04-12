@@ -88,7 +88,7 @@ Can be overwritten/moved:
 Routes can be included in main routes file (`routes.jl` by default), as follows:
 
 ```julia
-route(path::String, action::Function; method::String=POST, endpoint=JSON, html_file::String=Configuration.Settings[:html_base_filename]*".html", name::Union{Symbol,Nothing}=nothing)
+route(path::Union{Regex, String}, action::Function; method::String=POST, endpoint=JSON, html_file::String=Configuration.Settings[:html_base_filename]*".html", name::Union{Symbol,Nothing}=nothing)
 ```
 
 - Just `path`and `function` are mandatory, *kwargs* can overwrite default values as necessary.
