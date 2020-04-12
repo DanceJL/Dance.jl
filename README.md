@@ -23,6 +23,8 @@ simply by adding rendering function as a parameter, when building route list.
 
 That way you can take advantage of powerful frontend JavaScript frameworks, through easy collaboration with frontend developers.
 
+Dance can be used as starting base of new project, as well as web layer addition to existing project.
+
 ---
 
 ## 2 - Installation
