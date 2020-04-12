@@ -65,6 +65,7 @@ function start_project(project_name::String, path::String=".") :: Nothing
 
     mkdir(project_directory)
     cp(joinpath(@__DIR__, "../files"), project_directory; force=true)
+    run(`chmod -R 755 $project_directory`)
     @info "Project files created for $project_name"
 end
 
