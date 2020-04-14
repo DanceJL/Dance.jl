@@ -87,6 +87,8 @@ Can be overwritten/moved:
 
 ## 4 - Routes
 
+### 4.1 - General
+
 Routes can be included in main routes file (`routes.jl` by default), as follows:
 
 ```julia
@@ -106,6 +108,21 @@ Please see:
 - [HTML Endpoints](docs/routes/endpoints_html.md)
 
 for all cases.
+
+### 4.2 - Groups for common parameter routes
+
+If some routes share same path prefix or if you want to avoid repeating kwarg parameters, routes can be grouped into route groups as follows:
+
+```julia
+route_group(route_prefix="/dict", method=GET, endpoint=HTML, [
+    (path=r"/(?<value>\d.)", action=dict_1)
+    (path=r"/(?<key>\w+)/(?<value>\d{3})", action=dict_2, html_file="html/file")
+])
+```
+
+After specifying the common kwargs for routes in question, routes are passed as array of named tuples.
+
+As for common kwargs, only set named tuple keys that are necessary to overwrite.
 
 ## 5 - Launching
 
