@@ -81,6 +81,7 @@ function create_route_name_from_path(path::String) :: Symbol
     end
 
     name_symbol::Symbol = Symbol(name)
+
     while haskey(ROUTES, name_symbol)
         idx += 1
         name_symbol = Symbol(name, "$idx")
@@ -200,9 +201,9 @@ end
 Create new Route and add to ROUTES ordered dict
 - If path is Regex, convert to String for storage (Route has `has_regex` field)
 - Remove trailing slash
-- If supplied name is nothing, generate from path and eventual number suffix
+- If supplied name is nothing, generate from path and eventual number suffix, converting `/` to `-` in process
 """
-function route(path::Union{Regex, String}, action::Function; method::String=POST, endpoint=JSON, html_file::String=Configuration.Settings[:html_base_filename]*".html", name::Union{Symbol,Nothing}=nothing) :: OrderedCollections.OrderedDict{String, Route}
+function route(path::Union{Regex, String}, action::Function; method::String=POST, endpoint::String=JSON, html_file::String=Configuration.Settings[:html_base_filename]*".html", name::Union{Symbol,Nothing}=nothing) :: OrderedCollections.OrderedDict{String, Route}
     has_regex::Bool = isa(path, Regex)
 
     if has_regex
@@ -214,8 +215,63 @@ function route(path::Union{Regex, String}, action::Function; method::String=POST
     if isnothing(name)
         name = create_route_name_from_path(path)
     end
+    name = Symbol(lstrip(replace(string(name), "/" => "-"), '-'))
 
     push!(ROUTES, path => Route(endpoint=endpoint, method=method, path=path, has_regex=has_regex, action=action, html_file=html_file, name=name))
+end
+
+
+"""
+    route_group(routes::Array; route_prefix::String="", method::String="", endpoint::String="", html_file::String=Configuration.Settings[:html_base_filename]*".html")
+
+Loop through array of named tuple routes, calling `route` function
+- automatically prepend route_prefix to route path (if supplied)
+- if other parameters supplied as function kwargs, set route parameters accordingly
+"""
+function route_group(routes::Array; route_prefix::String="", method::String="", endpoint::String="", html_file::String=Configuration.Settings[:html_base_filename]*".html") :: Union{Nothing, OrderedCollections.OrderedDict{String, Route}}
+    for item in routes
+        if isa(item, NamedTuple)
+            name::Union{Nothing, Symbol} = nothing
+            path::Union{Regex, String} = ""
+
+            for idx in [:path, :action]
+                if !(idx in keys(item))
+                    @error "Please make sure $item contains at least `path` and `action` keys"
+                end
+            end
+
+            if length(route_prefix)>0 && route_prefix!="/"
+                if isa(item.path, Regex)
+                    path = Regex(route_prefix * string(item.path)[3:end-1])
+                else
+                    path = route_prefix * item.path
+                end
+            else
+                path = item.path
+                route_prefix = ""
+            end
+
+            if :method in keys(item)
+                method = item.method
+            end
+
+            if :endpoint in keys(item)
+                endpoint = item.endpoint
+            end
+
+            if :html_file in keys(item)
+                html_file = item.html_file
+            end
+
+            if :name in keys(item)
+                name = item.name
+            end
+
+            route(path, item.action; method=method, endpoint=endpoint, html_file=html_file, name=name)
+        else
+            @error "Please supply route $item as NamedTuple"
+        end
+    end
 end
 
 end
