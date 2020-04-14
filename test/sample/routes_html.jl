@@ -24,6 +24,8 @@ end
 
 
 route("/", hello; method=GET, endpoint=HTML)
-route(r"/dict/(?<value>\d.)", dict_1; method=GET, endpoint=HTML)
-route(r"/dict/(?<key>\w+)/(?<value>\d{3})", dict_2; method=GET, endpoint=HTML)
+route_group(route_prefix="/dict", method=GET, endpoint=HTML, [
+    (path=r"/(?<value>\d.)", action=dict_1)
+    (path=r"/(?<key>\w+)/(?<value>\d{3})", action=dict_2)
+])
 route("/dataframe", df; method=GET, endpoint=HTML)
