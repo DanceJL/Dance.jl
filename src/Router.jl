@@ -328,15 +328,15 @@ function static_dir(route_prefix::String, dir_path::String) :: Nothing
     global STATIC_ROUTE_PREFIX = route_prefix
 
     for (root, dirs, files) in walkdir(dir_path)
-        println(root, dirs, files)
         for file in files
-            println(file)
             if !occursin(".DS_Store", file)
                 path::String = STATIC_ROUTE_PREFIX * split(joinpath(root, file), STATIC_DIR)[2]
+                println(path)
                 route(path, output_file_as_string; method=GET, endpoint=STATIC)
             end
         end
     end
+    println(ROUTES)
 end
 
 end
