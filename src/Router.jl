@@ -6,6 +6,8 @@ import Dance.Configuration
 import Dance.Logger
 import Dance.URIUtils
 
+include("mime_types.jl")
+
 
 const GET= "GET"
 const POST= "POST"
@@ -13,7 +15,11 @@ const METHODS = [GET, POST]
 
 const HTML = "HTML"
 const JSON = "JSON"
-const ENDPOINTS = [HTML, JSON]
+const STATIC = "STATIC"
+const ENDPOINTS = [HTML, JSON, STATIC]
+
+STATIC_DIR = ""
+STATIC_ROUTE_PREFIX = ""
 
 mutable struct Route
     endpoint::String
@@ -139,6 +145,40 @@ function get_route(route_path::String) :: Union{Route, Nothing}
     end
 
     return found_route
+end
+
+
+"""
+    output_file_as_string(file_path::String)
+
+Read file_path as string and obtain corresponding mime-type based on file extension
+
+First try searching in STATIC_DIR then try in project root, each time relative to route_path
+`favicon.ico` is special exception case
+"""
+function output_file_as_string(file_path::String) :: Tuple{String, Dict}
+    file_output_as_string::String = ""
+    mime_type::Dict{String, String} = Dict("content_type" => "")
+
+    file_type::String = split(file_path, '.')[end]
+    if file_type in keys(mime_types)
+        mime_type["content_type"] = mime_types[file_type]
+    else
+        Logger.log("HTTP mime-type not yet supported for file: `$file_path`\nPlease file Github issue at: https://github.com/DanceJL/Dance.jl/issues")
+    end
+
+    if file_path=="/favicon.ico"
+        file_output_as_string = read(("html" * file_path), String)
+    else
+        try
+            file_path_static_dir::String = STATIC_DIR * split(file_path, STATIC_ROUTE_PREFIX)[2]
+            file_output_as_string = read(file_path_static_dir, String)
+        catch e
+            file_output_as_string = read(strip(file_path, '/'), String)
+        end
+    end
+
+    return file_output_as_string, mime_type
 end
 
 
@@ -270,6 +310,26 @@ function route_group(routes::Array; route_prefix::String="", method::String="", 
             route(path, item.action; method=method, endpoint=endpoint, html_file=html_file, name=name)
         else
             @error "Please supply route $item as NamedTuple"
+        end
+    end
+end
+
+
+"""
+    static_dir(route_prefix::String, dir_path::String)
+
+Parse supplied directort path and create routes for each item
+"""
+function static_dir(route_prefix::String, dir_path::String) :: Nothing
+    global STATIC_DIR = dir_path
+    global STATIC_ROUTE_PREFIX = route_prefix
+
+    for (root, dirs, files) in walkdir(dir_path)
+        for file in files
+            if !occursin(".DS_Store", file)
+                path::String = STATIC_ROUTE_PREFIX * split(joinpath(root, file), STATIC_DIR)[2]
+                route(path, output_file_as_string; method=GET, endpoint=STATIC)
+            end
         end
     end
 end
