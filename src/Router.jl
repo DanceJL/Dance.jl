@@ -168,7 +168,7 @@ function output_file_as_string(file_path::String) :: Tuple{String, Dict}
     end
 
     if file_path=="/favicon.ico"
-        file_output_as_string = read(("html" * file_path), String)
+        file_output_as_string = read((Configuration.Settings[:html_favicon_name] * ".ico"), String)
     else
         try
             file_path_static_dir::String = STATIC_DIR * split(file_path, STATIC_ROUTE_PREFIX)[2]

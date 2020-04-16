@@ -4,6 +4,7 @@ Settings = Dict(
     :dev => false,
     :engine => "HTTP",
     :html_base_filename => "html/base",
+    :html_favicon_name => "html/favicon",
     :log_filename => "log/dancejl",
     :routes_filename => "routes",
     :server_host => "",
