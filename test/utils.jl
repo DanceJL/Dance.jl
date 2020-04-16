@@ -52,7 +52,7 @@ end
 function routes(file_suffix::String) :: Nothing
     cd("demo")
     open("routes.jl", "w") do io_routes
-        open("../sample/routes_" * file_suffix * ".jl") do io_file
+        open("../sample/routes/" * file_suffix * ".jl") do io_file
             write(io_routes, io_file)
         end
     end
