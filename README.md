@@ -61,6 +61,7 @@ Files include:
 - `routes.jl` : main routes list file
 - `settings/Global.jl` : main project settings
 - `html/base.html` : for HTML outputs this is default template
+- `html/favicon.ico` : favicon for HTML pages
 
 Depending on environment, other files can be included under `settings` directory to overwrite those under `Global.jl`:
 
@@ -84,6 +85,7 @@ Can be overwritten/moved:
 
 - `routes.jl`: move/rename and update `Settings[:routes_filename]` accordingly
 - `html/base.html`: move/rename and update `Settings[:html_base_filename]` accordingly
+- `html/favicon.ico`: move/rename and update `Settings[:html_favicon_name]` accordingly
 
 ## 4 - Routes
 
@@ -123,6 +125,26 @@ route_group(route_prefix="/dict", method=GET, endpoint=HTML, [
 After specifying the common kwargs for routes in question, routes are passed as array of named tuples.
 
 As for common kwargs, only set named tuple keys that are necessary to overwrite.
+
+### 4.3 - Static files
+
+Dance can also serve static files.
+
+Recommended method is to specify a static directory whose structure will be parsed when building routes for each of the directory's contents.
+
+For example all contents of `files` directory will be accessible under `static` path:
+
+```julia
+static_dir("/static", "files")
+```
+
+If you have some other files that you would like to add individually, one can do so by passing path parameter as relative to project's root directory.
+
+For instance if you have `image.jpg` in `files` relative to project root:
+
+```julia
+route("/files/image.jpg", output_file_as_string; method=GET, endpoint=STATIC)
+```
 
 ## 5 - Launching
 
