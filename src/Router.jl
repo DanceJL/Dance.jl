@@ -321,7 +321,7 @@ end
 """
     static_dir(route_prefix::String, dir_path::String)
 
-Parse supplied directort path and create routes for each item
+Parse supplied directory path and create routes for each item
 """
 function static_dir(route_prefix::String, dir_path::String) :: Nothing
     global STATIC_DIR = dir_path
@@ -332,8 +332,8 @@ function static_dir(route_prefix::String, dir_path::String) :: Nothing
             if !occursin(".DS_Store", file)
                 path::String = STATIC_ROUTE_PREFIX * split(joinpath(root, file), STATIC_DIR)[2]
 
-                # Windows path issue (replace double backslash by single forward slash)
-                path = replace(path, "\\\\" => "/")
+                # Windows path issue (replace backslash by forward slash)
+                path = replace(path, "\\" => "/")
 
                 route(path, output_file_as_string; method=GET, endpoint=STATIC)
             end
