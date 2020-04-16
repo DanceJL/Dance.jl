@@ -1,6 +1,7 @@
 mime_types = Dict(
     "css" => "text/css",
     "gif" => "image/gif",
+    "ico" => "image/x-icon",
     "jpe" => "image/jpeg",
     "jpeg" => "image/jpeg",
     "jpg" => "image/jpeg",

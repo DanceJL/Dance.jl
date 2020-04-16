@@ -217,6 +217,9 @@ function populate(file_path::String) :: Bool
         @error "Populating Routes: file not found at $routes_filepath"
     end
 
+    # Add favicon.ico
+    route("/favicon.ico", output_file_as_string; method=GET, endpoint=STATIC)
+
     return is_success
 end
 
