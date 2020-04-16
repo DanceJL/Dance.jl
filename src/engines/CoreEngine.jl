@@ -72,7 +72,7 @@ end
 
 
 """
-    process_backed_function(;route::Router.Route, route_segments::Array{String, 1}, payload::String)
+    process_backend_function(;route::Router.Route, route_segments::Array{String, 1}, payload::String)
 
 2 main cases
 
@@ -83,7 +83,7 @@ If error during process, render 500 response
 
 Render 400 if badly supplied payload data
 """
-function process_backed_function(;route::Router.Route, route_segments::Array{String, 1}, payload::String) :: Dict{Symbol, Union{Dict, Int64, String}}
+function process_backend_function(;route::Router.Route, route_segments::Array{String, 1}, payload::String) :: Dict{Symbol, Union{Dict, Int64, String}}
     data::OUTPUT_DATA_FORMATS = ""
     headers::Dict = Dict()
     output::Union{Tuple, OUTPUT_DATA_FORMATS} = ""
@@ -237,7 +237,7 @@ function render(;request_headers::Array, request_method::String, request_path::S
                 if route.has_regex
                     request_route_segments = URIUtils.get_path_param_segments(;request_path=request_path, route_path=route.path)
                 end
-                rendered_dict = process_backed_function(;route=route, route_segments=request_route_segments, payload=request_payload)
+                rendered_dict = process_backend_function(;route=route, route_segments=request_route_segments, payload=request_payload)
             else
                 rendered_dict = render_405(;endpoint=route.endpoint, html_file=route.html_file)
             end
