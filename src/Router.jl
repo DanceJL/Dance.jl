@@ -331,12 +331,14 @@ function static_dir(route_prefix::String, dir_path::String) :: Nothing
         for file in files
             if !occursin(".DS_Store", file)
                 path::String = STATIC_ROUTE_PREFIX * split(joinpath(root, file), STATIC_DIR)[2]
-                println(path)
+
+                # Windows path issue (replace double backslash by single forward slash)
+                path = replace(path, "\\\\" => "/")
+
                 route(path, output_file_as_string; method=GET, endpoint=STATIC)
             end
         end
     end
-    println(ROUTES)
 end
 
 end
