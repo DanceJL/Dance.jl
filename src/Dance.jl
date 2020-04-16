@@ -9,6 +9,7 @@ include("Router.jl")
 include("utils/PayloadUtils.jl")
 include("renderers/HTMLRenderer.jl")
 include("renderers/JSONRenderer.jl")
+include("renderers/StaticRenderer.jl")
 include("renderers/CoreRenderer.jl")
 include("engines/CoreEngine.jl")
 

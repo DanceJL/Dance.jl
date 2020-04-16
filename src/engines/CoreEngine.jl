@@ -118,7 +118,7 @@ function process_backed_function(;route::Router.Route, route_segments::Array{Str
                 rendered_dict = render_500(;endpoint=route.endpoint, data=e, html_file=route.html_file, request_path=route.path)
             end
         end
-    else
+    elseif route.endpoint==Router.JSON || route.endpoint==Router.HTML
         try
             if route.has_regex
                 route_params_dict = build_route_params_dict(;request_route_segments=route_segments, route_path=route.path)
@@ -126,6 +126,14 @@ function process_backed_function(;route::Router.Route, route_segments::Array{Str
             else
                 output = route.action()
             end
+            headers, data = map_route_function_output(output)
+            rendered_dict = render_200(;headers=headers, endpoint=route.endpoint, data=data, html_file=route.html_file)
+        catch e
+            rendered_dict = render_500(;endpoint=route.endpoint, data=e, html_file=route.html_file, request_path=route.path)
+        end
+    else
+        try
+            output = route.action(route.path)
             headers, data = map_route_function_output(output)
             rendered_dict = render_200(;headers=headers, endpoint=route.endpoint, data=data, html_file=route.html_file)
         catch e
