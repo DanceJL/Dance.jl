@@ -11,7 +11,29 @@ routes("static")
 mkdir("demo/files")
 cp("sample/static/shipping_containers.jpg", "demo/files/image.jpg")
 
-project_settings_and_launch()
+
+# Ensure route paths cannot go higher than project route in directory structure
+@test_logs (:error, "Route paths cannot go higher than project route in directory structure") project_settings_and_launch()
+lines_array = []
+open("routes.jl", "r") do io
+    global lines_array = readlines(io)
+    for (idx, line) in enumerate(lines_array)
+        if line=="route(\"/../files/image.jpg\", output_file_as_string; method=GET, endpoint=STATIC)"
+            global lines_array
+            deleteat!(lines_array, idx)
+        end
+    end
+end
+lines_string = ""
+for line in lines_array
+    global lines_string
+    lines_string = lines_string * line * "\n"
+end
+open("routes.jl", "w") do io
+    write(io, lines_string)
+end
+Dance.Router.delete_routes!()
+Dance.pre_launch(joinpath(abspath(@__DIR__), "demo"))
 
 
 @testset "HTTP.listen" begin

@@ -254,6 +254,11 @@ function route(path::Union{Regex, String}, action::Function; method::String=POST
     end
     path = remove_trailing_slash(path)
 
+    # Prevent route paths contaning dots at start (static files relative path)
+    if startswith(path, "/..")
+        @error "Route paths cannot go higher than project route in directory structure"
+    end
+
     # No `name` param supplied
     if isnothing(name)
         name = create_route_name_from_path(path)
