@@ -111,7 +111,7 @@ Please see:
 
 for all cases.
 
-### 4.2 - Groups for common parameter routes
+### 4.2 - Groups For Common Parameter Routes
 
 If some routes share same path prefix or if you want to avoid repeating kwarg parameters, routes can be grouped into route groups as follows:
 
@@ -126,7 +126,7 @@ After specifying the common kwargs for routes in question, routes are passed as 
 
 As for common kwargs, only set named tuple keys that are necessary to overwrite.
 
-### 4.3 - Static files
+### 4.3 - Static Files
 
 Dance can also serve static files.
 
@@ -164,7 +164,7 @@ julia dance.jl repl
 one can enter REPL mode after project environment has been loaded.
 Press `ctrl` + `d` to exit.
 
-## 6 - Module loading & custom startup script
+## 6 - Module Loading & Custom Startup Script
 Note that when launching, Dance will add current dir as module import path.
 
 Should you require to load modules from other locations or run a custom startup script, once can add that by editing `dance.jl` as specified within file.
