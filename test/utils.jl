@@ -34,7 +34,7 @@ function project_settings_and_launch() :: Bool
 
     touch("dev.jl")
     open("dev.jl", "w") do io
-        write(io, ":dev = true \n")
+        write(io, ":dev = true\n")
         write(io, ":foo = \"bar\"")
     end
 
