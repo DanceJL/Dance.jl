@@ -259,6 +259,11 @@ function route(path::Union{Regex, String}, action::Function; method::String=POST
         @error "Route paths cannot go higher than project route in directory structure"
     end
 
+    # Route path must have leading slash
+    if !startswith(path, "/")
+        @error "Route must start with leading slash"
+    end
+
     # No `name` param supplied
     if isnothing(name)
         name = create_route_name_from_path(path)
