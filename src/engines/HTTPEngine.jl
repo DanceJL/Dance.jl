@@ -1,7 +1,5 @@
 import HTTP
 
-import Dance.Configuration
-
 
 """
     respond(;headers::Dict, status_code::Int64, content_type::String, body::String)
@@ -15,12 +13,12 @@ end
 
 
 """
-    start_server()
+    start_server(server_host::String, server_port::Int32)
 
 Start HTTP.jl server and listen for incoming requests and return HTML or JSON body
 """
-function start_server() :: Nothing
-    HTTP.Handlers.serve(Configuration.Settings[:server_host], Configuration.Settings[:server_port]) do request::HTTP.Request
+function start_server(server_host::String, server_port::Int32) :: Nothing
+    HTTP.Handlers.serve(server_host, server_port) do request::HTTP.Request
         render(;request_headers=request.headers, request_method=request.method, request_path=request.target, request_payload=String(take!(IOBuffer(request.body))))
     end
 end

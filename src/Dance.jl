@@ -30,7 +30,7 @@ function launch(start_server::Bool) :: Union{REPL.REPLBackend, Nothing}
         server_host::String = Configuration.Settings[:server_host]
         server_port::Int32 = Configuration.Settings[:server_port]
         @info "Web server started at $server_host:$server_port"
-        CoreEngine.start_server()
+        CoreEngine.start_server(server_host, server_port)
     else
         # https://github.com/JuliaLang/julia/blob/master/stdlib/REPL/src/REPL.jl
         terminal = REPL.Terminals.TTYTerminal("", stdin, stdout, stderr)
