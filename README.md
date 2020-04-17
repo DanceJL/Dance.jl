@@ -168,3 +168,9 @@ Press `ctrl` + `d` to exit.
 Note that when launching, Dance will add current dir as module import path.
 
 Should you require to load modules from other locations or run a custom startup script, once can add that by editing `dance.jl` as specified within file.
+
+## 7 - Running Dance Under Multi-processing Environment
+
+Dance can be run in multi-process environment via Julia Distributed package.
+
+To do so edit upper part of `dance.jl` as indicated in file.
