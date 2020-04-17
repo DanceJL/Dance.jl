@@ -343,7 +343,9 @@ function static_dir(route_prefix::String, dir_path::String) :: Nothing
                 path::String = STATIC_ROUTE_PREFIX * split(joinpath(root, file), STATIC_DIR)[2]
 
                 # Windows path issue (replace backslash by forward slash)
-                path = replace(path, "\\" => "/")
+                if Sys.iswindows()
+                    path = replace(path, "\\" => "/")
+                end
 
                 route(path, output_file_as_string; method=GET, endpoint=STATIC)
             end
