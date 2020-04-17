@@ -38,7 +38,7 @@ pkg> add https://github.com/DanceJL/Dance.jl
 or by using Pkg functions
 
 ```julia
-julia> using Pkg; Pkg.add("https://github.com/DanceJL/Dance.jl")
+julia> using Pkg; Pkg.add(Pkg.PackageSpec("https://github.com/DanceJL/Dance.jl"))
 ```
 
 Compatibility is with Julia 1.1 upward.
