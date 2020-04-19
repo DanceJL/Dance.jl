@@ -41,7 +41,7 @@ As you can see are supported:
 **Note that**:
 
 - Function routes params dict is **first input parameter, in case of JSON post route type**.
-- Also format of route params dict is **Dict{Symbol, Any}**.
+- Format of the route params dict is **Dict{Symbol, Any}**.
 
 ## 2 - Optional HTTP Header
 

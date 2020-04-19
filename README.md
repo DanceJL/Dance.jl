@@ -172,5 +172,8 @@ Should you require to load modules from other locations or run a custom startup 
 ## 7 - Running Dance Under Multi-processing Environment
 
 Dance can be run in multi-process environment via Julia Distributed package.
+This is also particularly useful should you be planning on using cluster of machines in order to implement load balancer.
+
+**That said please only use this feature should your website expect heavy traffic or output functions be resource intensive, as else performance will degrade as spawning and data transfer between processes are expensive operations.**
 
 To do so edit upper part of `dance.jl` as indicated in file.

@@ -4,7 +4,7 @@ Dance serves as JSON API for both GET and POST requests.
 For GET requests, Julia Dicts and DataFrames are converted on the go to JSON Dicts and Lists.
 For POST requests reverse conversion occurs.
 
-## 1 - GET endpoint
+## 1 - GET Endpoint
 
 For API GET endpoints, covering both Dict and DataFrame output cases, `routes.jl` can be similar to below:
 
@@ -46,7 +46,7 @@ JSON output for both routes, will become:
 ]
 ```
 
-## 2 - POST endpoint
+## 2 - POST Endpoint
 
 For API POST endpoints, covering both Dict and DataFrame output cases, `routes.jl` can be similar to below:
 
@@ -105,7 +105,7 @@ Data converted to Julia will be:
 Dict{String,Any}("a" => 123)
 ```
 
-## 3 - Pre-defined HTTP status codes
+## 3 - Pre-defined HTTP Status Codes
  
 Additionally to facilitate API development, a few standard HTTP response types can easily be integrated.
 
