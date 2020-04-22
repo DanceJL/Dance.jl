@@ -48,7 +48,7 @@ function populate(file_path) :: Bool
                         elseif line[1]==':'
                             line_split::Array{String} = split(line, "=")
                             key::String = lstrip(rstrip(line_split[1]), ':')
-                            value::String = lstrip(line_split[2])
+                            value::Union{Float64, Int64, String, SubString{String}} = lstrip(line_split[2])
 
                             # Remove trailing comment
                             if occursin(" #", value)
@@ -58,6 +58,18 @@ function populate(file_path) :: Bool
                             # Remove enclosing quotation marks if is String value
                             if value[1]=='"'
                                 value = lstrip(rstrip(value, '"'), '"')
+                            end
+
+                            # Convert SubString{String} from to String
+                            value = string(value)
+
+                            # Convert to Float/Int if possible
+                            if tryparse(Float64, value) isa Number
+                                if tryparse(Int64, value) !== nothing
+                                    value = tryparse(Int64, value)
+                                else
+                                    value = parse(Float64, value)
+                                end
                             end
 
                             # Populate/update Settings dict
