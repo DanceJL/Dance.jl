@@ -2,12 +2,11 @@ import HTTP
 
 
 """
-    respond(;headers::Dict, status_code::Int64, content_type::String, body::String)
+    respond(;headers::Dict, status_code::Int64, body::String)
 
 Return HTTP.Response for specified parameters
 """
-function respond(;headers::Dict, status_code::Int64, content_type::String, body::String) :: HTTP.Response
-    headers["content_type"] = content_type
+function respond(;headers::Dict, status_code::Int64, body::String) :: HTTP.Response
     return HTTP.Response(status_code, headers; body=body)
 end
 

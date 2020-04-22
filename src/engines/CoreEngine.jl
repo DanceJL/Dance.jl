@@ -259,9 +259,11 @@ function render(;request_headers::Array, request_method::String, request_path::S
         rendered_dict = render_404(;endpoint=endpoint)
     end
 
+    ## Automaticlly set `Content-Type` Header ##
+    rendered_dict[:headers]["Content-Type"] = rendered_dict[:content_type]
+
     return respond(;
-        headers=rendered_dict[:headers], status_code=rendered_dict[:status_code],
-        content_type=rendered_dict[:content_type], body=rendered_dict[:body]
+        headers=rendered_dict[:headers], status_code=rendered_dict[:status_code], body=rendered_dict[:body]
     )
 end
 
