@@ -25,7 +25,7 @@ function get_df() :: DataFrames.DataFrame
 end
 
 
-function get_dict() :: Dict
+function get_dict() :: Dict{Symbol, Int64}
     return Dict(:a => 123)
 end
 

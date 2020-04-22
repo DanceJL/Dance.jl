@@ -8,17 +8,17 @@ function get_df() :: DataFrames.DataFrame
 end
 
 
-function get_dict() :: Dict
+function get_dict() :: Dict{Symbol, Int64}
     return Dict(:a => 123)
 end
 
 
-function post_df(df::DataFrames.DataFrame) :: Tuple{DataFrames.DataFrame, Dict}
+function post_df(df::DataFrames.DataFrame) :: Tuple{DataFrames.DataFrame, Dict{String, String}}
     return df, Dict("foo" => "bar")
 end
 
 
-function post_dict(params_dict::Dict{Symbol, Any}, dict::Dict) :: Dict
+function post_dict(params_dict::Dict{Symbol, Union{Float64, Int64, String}}, dict::Dict) :: Dict{String, Int64}
     for key in keys(dict)
         dict[key] = params_dict[:value]
     end

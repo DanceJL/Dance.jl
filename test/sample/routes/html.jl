@@ -8,12 +8,12 @@ function df() :: DataFrames.DataFrame
 end
 
 
-function dict_1(params_dict::Dict{Symbol, Any}) :: Dict
+function dict_1(params_dict::Dict{Symbol, Union{Float64, Int64, String}}) :: Dict{Symbol, Float64}
     return Dict(:a => params_dict[:value])
 end
 
 
-function dict_2(params_dict::Dict{Symbol, Any}) :: Dict
+function dict_2(params_dict::Dict{Symbol, Union{Float64, Int64, String}}) :: Dict{Symbol, Int64}
     return Dict(Symbol(params_dict[:key]) => params_dict[:value])
 end
 

@@ -13,11 +13,11 @@ end
 
 
 """
-    start_server(server_host::String, server_port::Int32)
+    start_server(server_host::String, server_port::Int64)
 
 Start HTTP.jl server and listen for incoming requests and return HTML or JSON body
 """
-function start_server(server_host::String, server_port::Int32) :: Nothing
+function start_server(server_host::String, server_port::Int64) :: Nothing
     HTTP.Handlers.serve(server_host, server_port) do request::HTTP.Request
         render(;request_headers=request.headers, request_method=request.method, request_path=request.target, request_payload=String(take!(IOBuffer(request.body))))
     end

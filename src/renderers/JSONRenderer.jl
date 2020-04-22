@@ -21,11 +21,13 @@ const HTTP_STATUS_ERROR_CODES = Dict{String, Int64}(
 
 
 """
-    render(;headers::Dict, status_code::Int64, data::Union{DataFrames.DataFrame, Dict}) :: Dict{Symbol, Union{Dict, Int64, String}}
+    render(;headers::Dict, status_code::Int64, data::Union{DataFrames.DataFrame, Dict})
 
 Output JSON renderer
 
 Though `status code` is pre-supplied, can become 500
+
+Cannot set `headers type to `Dict{String, String} here, as can be blank (status_code !=200)
 """
 function render(;headers::Dict, status_code::Int64, data::Union{DataFrames.DataFrame, Dict}) :: Dict{Symbol, Union{Dict, Int64, String}}
     body::Union{Array{Any,1}, Dict} = Dict()

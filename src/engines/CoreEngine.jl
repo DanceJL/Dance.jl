@@ -12,6 +12,7 @@ import Dance.URIUtils
 
 
 const OUTPUT_DATA_FORMATS = Union{DataFrames.DataFrame, Dict, String}
+const ROUTE_PARAMS_FORMATS = Union{Float64, Int64, String}
 
 
 #=Chosen Engine must have following functions:
@@ -32,11 +33,11 @@ Build dict of route params and corresponding values, by:
 - Looking-up request route segments at corresponding index
 """
 function build_route_params_dict(;request_route_segments::Array{String, 1}, route_path::String) :: Dict
-    route_params_dict::Dict{Symbol, Any} = Dict()
+    route_params_dict::Dict{Symbol, ROUTE_PARAMS_FORMATS} = Dict()
 
     for (idx, item) in enumerate(collect(eachmatch(URIUtils.ROUTE_REGEX_PARAM_ONLY, route_path)))
         index::String = lstrip(split(item.match, ">")[1], '<')
-        value::Any = request_route_segments[idx]
+        value::ROUTE_PARAMS_FORMATS = request_route_segments[idx]
         if tryparse(Float64, value) isa Number
             if tryparse(Int64, value) !== nothing
                 value = parse(Int64, value)
@@ -58,7 +59,7 @@ Output from route.action can contain optional HTTP Headers params dict
 """
 function map_route_function_output(output::Union{Tuple, OUTPUT_DATA_FORMATS})
     data::OUTPUT_DATA_FORMATS = ""
-    headers::Dict = Dict()
+    headers::Dict{String, String} = Dict()
 
     if isa(output, Tuple)
         data = output[1]
@@ -85,11 +86,11 @@ Render 400 if badly supplied payload data
 """
 function process_backend_function(;route::Router.Route, route_segments::Array{String, 1}, payload::String) :: Dict{Symbol, Union{Dict, Int64, String}}
     data::OUTPUT_DATA_FORMATS = ""
-    headers::Dict = Dict()
+    headers::Dict{String, String} = Dict()
     output::Union{Tuple, OUTPUT_DATA_FORMATS} = ""
     received_data::Union{DataFrames.DataFrame, Dict} = Dict()
     rendered_dict::Dict{Symbol, Union{Dict, Int64, String}} = Dict()
-    route_params_dict::Dict{Symbol, Any} = Dict()
+    route_params_dict::Dict{Symbol, ROUTE_PARAMS_FORMATS} = Dict()
 
     if route.endpoint==Router.JSON && length(payload)>0
         can_proceed::Bool = false
@@ -146,11 +147,11 @@ end
 
 
 """
-    render_200(;headers::Dict, endpoint::String, data::OUTPUT_DATA_FORMATS, html_file::String)
+    render_200(;headers::Dict{String, String}, endpoint::String, data::OUTPUT_DATA_FORMATS, html_file::String)
 
 Render HTTP 200 response
 """
-function render_200(;headers::Dict, endpoint::String, data::OUTPUT_DATA_FORMATS, html_file::String) :: Dict{Symbol, Union{Dict, Int64, String}}
+function render_200(;headers::Dict{String, String}, endpoint::String, data::OUTPUT_DATA_FORMATS, html_file::String) :: Dict{Symbol, Union{Dict, Int64, String}}
     return CoreRenderer.render(;headers=headers, status_code=200, endpoint=endpoint, data=data, html_file=html_file)
 end
 
@@ -217,12 +218,6 @@ Main entry point of HTTP Rendering
 - If error during process, render 500 response
 
 Check Headers if was JSON request, to return 404 as JSON output
-
-Arguments:
-
-    `request_headers`: Array{Pair}
-
-    `request_payload`: String
 """
 function render(;request_headers::Array, request_method::String, request_path::String, request_payload::String)
     rendered_dict::Dict{Symbol, Union{Dict, Int64, String}} = Dict()

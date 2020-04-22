@@ -28,7 +28,7 @@ Launch either (depending on `start_server` param):
 function launch(start_server::Bool) :: Union{REPL.REPLBackend, Nothing}
     if start_server
         server_host::String = Configuration.Settings[:server_host]
-        server_port::Int32 = Configuration.Settings[:server_port]
+        server_port::Int64 = Configuration.Settings[:server_port]
         @info "Web server started at $server_host:$server_port"
         CoreEngine.start_server(server_host, server_port)
     else

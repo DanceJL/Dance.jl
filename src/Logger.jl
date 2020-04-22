@@ -13,7 +13,7 @@ Logging of timestamp & error message
 - If Prod: Write to log file
 - Else: Output te REPL
 """
-function log(error)
+function log(error::String) :: Nothing
     error::String = string(Dates.now(Dates.UTC), ": ", error)
 
     if Configuration.is_prod()

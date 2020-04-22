@@ -37,6 +37,8 @@ end
 HTML renderer
 
 `status code` is pre-supplied
+
+Cannot set `headers type to `Dict{String, String} here, as can be blank (status_code !=200)
 """
 function render(;headers::Dict, status_code::Int64, data::Union{DataFrames.DataFrame, Dict, String}, html_file::String) :: Dict{Symbol, Union{Dict, Int64, String}}
     if status_code==500

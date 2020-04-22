@@ -14,6 +14,8 @@ import Dance.Router
 Generic web output rendering function
 
 Depending on `endpoint` field, render JSON or HTML string
+
+Cannot set `headers type to `Dict{String, String} here, as can be blank (status_code !=200)
 """
 function render(;headers::Dict=Dict(), status_code::Int64, endpoint::String, data::Union{DataFrames.DataFrame, Dict, String}, html_file::String) :: Dict{Symbol, Union{Dict, Int64, String}}
     if endpoint==Router.HTML

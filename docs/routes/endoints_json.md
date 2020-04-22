@@ -19,7 +19,7 @@ function get_df() :: DataFrames.DataFrame
 end
 
 
-function get_dict() :: Dict
+function get_dict() :: Dict{Symbol, Int64}
     return Dict(:a => 123)
 end
 
@@ -61,7 +61,7 @@ function post_df(df::DataFrames.DataFrame) :: DataFrames.DataFrame
 end
 
 
-function post_dict(dict::Dict) :: Dict
+function post_dict(dict::Dict) :: Dict{String, Any}
     return dict
 end
 
@@ -116,7 +116,7 @@ using Dance.Router
 import Dance.JSONRenderer
 
 
-function post_dict(dict::Dict) :: Dict
+function post_dict(dict::Dict) :: Dict{Symbol, String}
     return Dict(:error => JSONRenderer.HTTP_STATUS_UNAUTHORIZED)
 end
 
