@@ -11,7 +11,7 @@ function render(;headers::Dict, status_code::Int64, data::String) :: Dict{Symbol
     return Dict(
         :headers => headers,
         :status_code => status_code,
-        :content_type => headers["content_type"],
+        :content_type => headers["Content-Type"],
         :body => data
     )
 end

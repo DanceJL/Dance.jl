@@ -42,13 +42,13 @@ Dance.pre_launch(joinpath(abspath(@__DIR__), "demo"))
     # Favicon
     r = HTTP.request("GET", "http://localhost:8000/favicon.ico")
     @test r.status==200
-    compare_http_header(r.headers, "content_type", "image/x-icon")
+    compare_http_header(r.headers, "Content-Type", "image/x-icon")
     @test r.body==read("../../files/html/favicon.ico")
 
     # Single static file
     r = HTTP.request("GET", "http://localhost:8000/files/image.jpg")
     @test r.status==200
-    compare_http_header(r.headers, "content_type", "image/jpeg")
+    compare_http_header(r.headers, "Content-Type", "image/jpeg")
     @test r.body==read("files/image.jpg")
 
     # Static dir
@@ -60,7 +60,7 @@ Dance.pre_launch(joinpath(abspath(@__DIR__), "demo"))
     ]
         r = HTTP.request("GET", "http://localhost:8000/static/$path")
         @test r.status==200
-        compare_http_header(r.headers, "content_type", "image/jpeg")
+        compare_http_header(r.headers, "Content-Type", "image/jpeg")
         @test r.body==read(joinpath("../sample/static", path))
     end
 end

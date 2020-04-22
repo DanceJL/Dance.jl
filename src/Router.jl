@@ -158,11 +158,11 @@ First try searching in STATIC_DIR then try in project root, each time relative t
 """
 function output_file_as_string(file_path::String) :: Tuple{String, Dict}
     file_output_as_string::String = ""
-    mime_type::Dict{String, String} = Dict("content_type" => "")
+    headers::Dict{String, String} = Dict("Content-Type" => "")
 
     file_type::String = split(file_path, '.')[end]
     if file_type in keys(mime_types)
-        mime_type["content_type"] = mime_types[file_type]
+        headers["Content-Type"] = mime_types[file_type]
     else
         Logger.log("HTTP mime-type not yet supported for file: `$file_path`\nPlease file Github issue at: https://github.com/DanceJL/Dance.jl/issues")
     end
@@ -178,7 +178,7 @@ function output_file_as_string(file_path::String) :: Tuple{String, Dict}
         end
     end
 
-    return file_output_as_string, mime_type
+    return file_output_as_string, headers
 end
 
 
