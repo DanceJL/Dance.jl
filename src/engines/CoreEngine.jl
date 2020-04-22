@@ -88,7 +88,7 @@ function process_backend_function(;route::Router.Route, route_segments::Array{St
     data::OUTPUT_DATA_FORMATS = ""
     headers::Dict{String, String} = Dict()
     output::Union{Tuple, OUTPUT_DATA_FORMATS} = ""
-    received_data::Union{DataFrames.DataFrame, Dict} = Dict()
+    received_data::Union{DataFrames.DataFrame, Union{Array{Any,1}, Dict}} = Dict()
     rendered_dict::Dict{Symbol, Union{Dict, Int64, String}} = Dict()
     route_params_dict::Dict{Symbol, ROUTE_PARAMS_FORMATS} = Dict()
 

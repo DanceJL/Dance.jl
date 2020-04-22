@@ -1,3 +1,6 @@
+import Pkg
+Pkg.pkg"activate ."
+
 #=
     Multi-processing case.
     Requires Distributed to be installed.

@@ -79,7 +79,7 @@ Create name from path string by:
 """
 function create_route_name_from_path(path::String) :: Symbol
     idx::Int128 = 0
-    name= path[2:end]
+    name = path[2:end]
 
     # Index url case
     if length(name)==0
