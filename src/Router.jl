@@ -157,6 +157,7 @@ First try searching in STATIC_DIR then try in project root, each time relative t
 `favicon.ico` is special exception case
 """
 function output_file_as_string(file_path::String) :: Tuple{String, Dict}
+    filename::String = ""
     file_output_as_string::String = ""
     headers::Dict{String, String} = Dict("Content-Type" => "")
 
@@ -168,15 +169,16 @@ function output_file_as_string(file_path::String) :: Tuple{String, Dict}
     end
 
     if file_path=="/favicon.ico"
-        file_output_as_string = read((Configuration.Settings[:html_favicon_name] * ".ico"), String)
+        filename = Configuration.Settings[:html_favicon_name] * ".ico"
     else
         try
-            file_path_static_dir::String = STATIC_DIR * split(file_path, STATIC_ROUTE_PREFIX)[2]
-            file_output_as_string = read(file_path_static_dir, String)
+            filename = STATIC_DIR * split(file_path, STATIC_ROUTE_PREFIX)[2]
         catch e
-            file_output_as_string = read(strip(file_path, '/'), String)
+            filename = strip(file_path, '/')
         end
     end
+    file_output_as_string = read(filename, String)
+    headers["Content-Length"] = string(filesize(filename))
 
     return file_output_as_string, headers
 end

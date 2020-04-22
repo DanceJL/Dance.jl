@@ -1,6 +1,7 @@
 module CoreEngine
 
 import DataFrames
+import Dates
 import JSON
 
 import Dance.Configuration
@@ -259,8 +260,21 @@ function render(;request_headers::Array, request_method::String, request_path::S
         rendered_dict = render_404(;endpoint=endpoint)
     end
 
-    ## Automaticlly set `Content-Type` Header ##
+    ## Automaticlly set `Content-Type`, `Content-Length` and `Date` Headers ##
     rendered_dict[:headers]["Content-Type"] = rendered_dict[:content_type]
+    if rendered_dict[:content_type] in ["application/json", "text/html; charset=UTF-8"]
+        rendered_dict[:headers]["Content-Length"] = string(length(rendered_dict[:body]))
+    end
+
+    timestamp::Dates.DateTime = Dates.now(Dates.UTC)
+    dayname::String = Dates.dayabbr(timestamp)
+    day::Int64 = Dates.day(timestamp)
+    monthname::String = Dates.monthabbr(timestamp)
+    year::Int64 = Dates.year(timestamp)
+    hour::Int64 = Dates.hour(timestamp)
+    minute::Int64 = Dates.minute(timestamp)
+    second::Int64 = Dates.second(timestamp)
+    rendered_dict[:headers]["Date"] = "$dayname, $day $monthname $year $hour:$minute:$second UTC"
 
     return respond(;
         headers=rendered_dict[:headers], status_code=rendered_dict[:status_code], body=rendered_dict[:body]
