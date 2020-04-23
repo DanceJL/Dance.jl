@@ -1,7 +1,6 @@
 import Dance
-import HTTP
 
-include("./utils.jl")
+include("./utils/main.jl")
 
 
 Dance.start_project("demo")
@@ -36,32 +35,26 @@ Dance.Router.delete_routes!()
 Dance.pre_launch(joinpath(abspath(@__DIR__), "demo"))
 
 
+## Test all routes with pending slash, to ensure is removed ##
 @testset "HTTP.listen" begin
     @async Dance.launch(true)
 
     # Favicon
-    r = HTTP.request("GET", "http://localhost:8000/favicon.ico")
-    @test r.status==200
-    compare_http_header(r.headers, "Content-Type", "image/x-icon")
-    @test r.body==read("../../files/html/favicon.ico")
+    make_and_test_request_get("/favicon.ico/", 200, Dict("Content-Type" => "image/x-icon"), 15406, false, read("../../files/html/favicon.ico"))
 
     # Single static file
-    r = HTTP.request("GET", "http://localhost:8000/files/image.jpg")
-    @test r.status==200
-    compare_http_header(r.headers, "Content-Type", "image/jpeg")
-    @test r.body==read("files/image.jpg")
+    make_and_test_request_get("/files/image.jpg/", 200, Dict("Content-Type" => "image/jpeg"), 84668, false, read("files/image.jpg"))
 
     # Static dir
-    for path in [
-        "shipping_containers.jpg",
-        "office/coffee_and_laptop.jpg",
-        "outdoors/scenary/hills_in_mist.jpg",
-        "outdoors/wildlife/goat_and_sheep.jpg"
+    for item in [
+        ["shipping_containers.jpg", 84668],
+        ["office/coffee_and_laptop.jpg", 2126200],
+        ["outdoors/scenary/hills_in_mist.jpg", 3181705],
+        ["outdoors/wildlife/goat_and_sheep.jpg", 3175701]
     ]
-        r = HTTP.request("GET", "http://localhost:8000/static/$path")
-        @test r.status==200
-        compare_http_header(r.headers, "Content-Type", "image/jpeg")
-        @test r.body==read(joinpath("../sample/static", path))
+        path::String = item[1]
+        content_length::Int64 = item[2]
+        make_and_test_request_get("/static/$path/", 200, Dict("Content-Type" => "image/jpeg"), content_length, false, read(joinpath("../sample/static", path)))
     end
 end
 

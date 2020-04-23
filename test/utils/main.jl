@@ -1,10 +1,8 @@
-function compare_http_header(headers::Array, key::String, value::String) :: Nothing
-    for item in headers
-        if item[1]==key
-            @test item[2]==value
-        end
-    end
-end
+import Dance
+import HTTP
+import JSON
+
+include("./request.jl")
 
 
 function delete_project() :: Nothing
@@ -15,16 +13,15 @@ function delete_project() :: Nothing
 end
 
 
-function extract_html_body_content(html_body::Array{UInt8,1}) :: String
-    return split(
-        split(String(html_body), "<div id=\"js-dance-json-data\">")[2],
-        "</div>"
-    )[1]
+function make_and_test_request_get(path::String, status::Int64, headers::Dict{String, String}, content_length::Int64, is_json_body::Bool, body::Any) :: Nothing
+    r = HTTP.request("GET", "http://127.0.0.1:8000$path")
+    parse_and_test_request(r, status, headers, content_length, is_json_body, body)
 end
 
 
-function extract_json_content(json_body::Array{UInt8,1}) :: String
-    return String(json_body)
+function make_and_test_request_post(path::String, payload::Union{Array, Dict}, status::Int64, headers::Dict{String, String}, content_length::Int64, is_json_body::Bool, body::Any) :: Nothing
+    r = HTTP.request("POST", "http://127.0.0.1:8000$path", [], JSON.json(payload))
+    parse_and_test_request(r, status, headers, content_length, is_json_body, body)
 end
 
 
@@ -44,9 +41,8 @@ function project_settings_and_launch() :: Bool
 
     cd("..")
 
-    Dance.pre_launch(joinpath(abspath(@__DIR__), "demo"))
+    Dance.pre_launch(abspath(pwd()))
 end
-
 
 
 function routes(file_suffix::String) :: Nothing

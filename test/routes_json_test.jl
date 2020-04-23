@@ -1,8 +1,6 @@
 import Dance
-import HTTP
-import JSON
 
-include("./utils.jl")
+include("./utils/main.jl")
 
 
 Dance.start_project("demo")
@@ -14,42 +12,48 @@ project_settings_and_launch()
 @testset "HTTP.listen" begin
     @async Dance.launch(true)
 
-    r = HTTP.request("GET", "http://127.0.0.1:8000/dict/")
-    @test r.status==200
-    compare_http_header(r.headers, "Content-Type", "application/json")
-    @test JSON.parse(extract_json_content(r.body))==Dict("a" => 123)
+    make_and_test_request_get("/dict/", 200, Dict("Content-Type" => "application/json"), 9, true, Dict("a" => 123))
 
-    r = HTTP.request("GET", "http://127.0.0.1:8000/dataframe/")
-    @test r.status==200
-    compare_http_header(r.headers, "Content-Type", "application/json")
-    @test JSON.parse(extract_json_content(r.body))==[
-        ["A", "B"],
-        [1, "M"],
-        [2, "F"],
-        [3, "F"],
-        [4, "M"]
-    ]
+    make_and_test_request_get(
+        "/dataframe/",
+        200,
+        Dict("Content-Type" => "application/json"),
+        43,
+        true,
+        [
+            ["A", "B"],
+            [1, "M"],
+            [2, "F"],
+            [3, "F"],
+            [4, "M"]
+        ]
+    )
 
     # Test int url param
-    body_dict::Dict = Dict("b" => "abc")
-    r = HTTP.request("POST", "http://127.0.0.1:8000/post/dict/12", [], JSON.json(body_dict))
-    @test r.status==200
-    compare_http_header(r.headers, "Content-Type", "application/json"))
-    @test JSON.parse(extract_json_content(r.body))==Dict("b" => 12)
+    make_and_test_request_post("/post/dict/12", Dict("b" => "abc"), 200, Dict("Content-Type" => "application/json"), 8, true, Dict("b" => 12))
 
     # Test setting Header value in backend
-    body_df::Array = [
-        ["A", "B"],
-        [1, "M"],
-        [2, "F"],
-        [3, "G"],
-        [4, "Z"]
-    ]
-    r = HTTP.request("POST", "http://127.0.0.1:8000/post/dataframe/", [], JSON.json(body_df))
-    @test r.status==200
-    compare_http_header(r.headers, "Content-Type", "application/json")
-    compare_http_header(r.headers, "foo", "bar")
-    @test JSON.parse(extract_json_content(r.body))==body_df
+    make_and_test_request_post(
+        "/post/dataframe/",
+        [
+            ["A", "B"],
+            [1, "M"],
+            [2, "F"],
+            [3, "G"],
+            [4, "Z"]
+        ],
+        200,
+        Dict("Content-Type" => "application/json", "foo" => "bar"),
+        43,
+        true,
+        [
+            ["A", "B"],
+            [1, "M"],
+            [2, "F"],
+            [3, "G"],
+            [4, "Z"]
+        ]
+    )
 end
 
 

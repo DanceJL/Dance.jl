@@ -1,8 +1,6 @@
 import Dance
-import HTTP
-import JSON
 
-include("./utils.jl")
+include("./utils/main.jl")
 
 
 Dance.start_project("demo")
@@ -14,33 +12,28 @@ project_settings_and_launch()
 @testset "HTTP.listen" begin
     @async Dance.launch(true)
 
-     r = HTTP.request("GET", "http://127.0.0.1:8000/")
-    @test r.status==200
-    compare_http_header(r.headers, "Content-Type", "text/html; charset=UTF-8")
-    @test extract_html_body_content(r.body)=="Hello World"
+    make_and_test_request_get("/", 200, Dict("Content-Type" => "text/html; charset=UTF-8"), 217, false, "Hello World")
 
     # Test decimal url param
-    r = HTTP.request("GET", "http://127.0.0.1:8000/dict/12.3")
-    @test r.status==200
-    compare_http_header(r.headers, "Content-Type", "text/html; charset=UTF-8")
-    @test JSON.parse(extract_html_body_content(r.body))==Dict("a" => 12.3)
+    make_and_test_request_get("/dict/12.3/", 200, Dict("Content-Type" => "text/html; charset=UTF-8"), 216, true, Dict("a" => 12.3))
 
     # Test int and string url params
-    r = HTTP.request("GET", "http://127.0.0.1:8000/dict/abc/123")
-    @test r.status==200
-    compare_http_header(r.headers, "Content-Type", "text/html; charset=UTF-8")
-    @test JSON.parse(extract_html_body_content(r.body))==Dict("abc" => 123)
+    make_and_test_request_get("/dict/abc/123/", 200, Dict("Content-Type" => "text/html; charset=UTF-8"), 217, true, Dict("abc" => 123))
 
-    r = HTTP.request("GET", "http://127.0.0.1:8000/dataframe/")
-    @test r.status==200
-    compare_http_header(r.headers, "Content-Type", "text/html; charset=UTF-8")
-    @test JSON.parse(extract_html_body_content(r.body))==[
-        ["A", "B"],
-        [1, "M"],
-        [2, "F"],
-        [3, "F"],
-        [4, "M"]
-    ]
+    make_and_test_request_get(
+        "/dataframe/",
+        200,
+        Dict("Content-Type" => "text/html; charset=UTF-8"),
+        249,
+        true,
+        [
+            ["A", "B"],
+            [1, "M"],
+            [2, "F"],
+            [3, "F"],
+            [4, "M"]
+        ]
+    )
 end
 
 
