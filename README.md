@@ -32,13 +32,13 @@ Dance can be used as starting base of new project, as well as web layer addition
 Package can be installed with Julia's package manager, either by using Pkg REPL mode (*press ]*):
 
 ```
-pkg> add https://github.com/DanceJL/Dance.jl
+pkg> add Dance
 ```
 
 or by using Pkg functions
 
 ```julia
-julia> using Pkg; Pkg.add(Pkg.PackageSpec("https://github.com/DanceJL/Dance.jl"))
+julia> using Pkg; Pkg.add("Dance")
 ```
 
 Compatibility is with Julia 1.1 upward.
