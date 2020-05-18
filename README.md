@@ -7,9 +7,9 @@
 ## 1 - Introduction
 
 Julia is an excellent backend language ([read more](https://cloud4scieng.org/2018/12/13/julia-distributed-computing-in-the-cloud/)), powering numerous Artificial Intelligence and Big Data applications.
-However integrating these results into web output is not job of a data scientist, nor should it be complicated.
+However integrating these results into web output is not the job of a data scientist, nor should it be complicated.
 
-That said, aim of Dance is to facilitate process by allowing output/reception of:
+That said, the aim of Dance is to facilitate process by allowing output/reception of:
 
 - Dict {Symbol, Any}
 - DataFrame
@@ -17,7 +17,7 @@ That said, aim of Dance is to facilitate process by allowing output/reception of
 to/from:
 
 - JSON API
-- Javascript string in HTML page
+- JavaScript string in HTML page
 
 simply by adding rendering function as a parameter, when building route list.
 
@@ -29,13 +29,13 @@ Dance can be used as starting base of new project, as well as web layer addition
 
 ## 2 - Installation
 
-Package can be installed with Julia's package manager, either by using Pkg REPL mode (*press ]*):
+Package can be installed with Julia's package manager, either by *pressing* ] to get the Pkg REPL mode and doing:
 
 ```
 pkg> add Dance
 ```
 
-or by using Pkg functions
+or by using Pkg functions:
 
 ```julia
 julia> using Pkg; Pkg.add("Dance")
@@ -154,14 +154,14 @@ Calling:
 julia dance.jl
 ```
 will start Dance as web server.
-Press `ctrl` + `c` to stop.
+Press `ctrl` + `C` to stop.
 
 By calling:
 
 ```
 julia dance.jl repl
 ```
-one can enter REPL mode after project environment has been loaded.
+one can enter the REPL mode after project environment has been loaded.
 Press `ctrl` + `d` to exit.
 
 ## 6 - Module Loading & Custom Startup Script
@@ -176,4 +176,4 @@ This is also particularly useful should you be planning on using cluster of mach
 
 **That said please only use this feature should your website expect heavy traffic or output functions be resource intensive, as else performance will degrade as spawning and data transfer between processes are expensive operations.**
 
-To do so edit upper part of `dance.jl` as indicated in file.
+To do so edit the upper part of `dance.jl` as indicated in file.
