@@ -4,13 +4,14 @@ include("./utils/main.jl")
 
 
 Dance.start_project("demo")
+project_settings()
 routes("html")
-project_settings_and_launch()
 
 
 ## Test all routes with pending slash, to ensure is removed ##
 @testset "HTTP.listen" begin
-    @async Dance.launch(true)
+    @async include(joinpath(abspath(pwd()), "dance.jl"))
+    sleep(1)
 
     make_and_test_request_get("/", 200, Dict("Content-Type" => "text/html; charset=UTF-8"), 217, false, "Hello World")
 

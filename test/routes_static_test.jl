@@ -4,15 +4,17 @@ include("./utils/main.jl")
 
 
 Dance.start_project("demo")
+project_settings()
 routes("static")
 
 # Create file for static file route
-mkdir("demo/files")
-cp("sample/static/shipping_containers.jpg", "demo/files/image.jpg")
+mkdir("files")
+cp("../sample/static/shipping_containers.jpg", "files/image.jpg")
 
 
 # Ensure route paths cannot go higher than project route in directory structure
-@test_logs (:error, "Route paths cannot go higher than project route in directory structure") project_settings_and_launch()
+@test_logs (:error, "Route paths cannot go higher than project route in directory structure") include(joinpath(abspath(pwd()), "routes.jl"))
+
 lines_array = []
 open("routes.jl", "r") do io
     global lines_array = readlines(io)
@@ -32,12 +34,12 @@ open("routes.jl", "w") do io
     write(io, lines_string)
 end
 Dance.Router.delete_routes!()
-Dance.pre_launch(joinpath(abspath(@__DIR__), "demo"))
 
 
 ## Test all routes with pending slash, to ensure is removed ##
 @testset "HTTP.listen" begin
-    @async Dance.launch(true)
+    @async include(joinpath(abspath(pwd()), "dance.jl"))
+    sleep(1)
 
     # Favicon
     make_and_test_request_get("/favicon.ico/", 200, Dict("Content-Type" => "image/x-icon"), 15406, false, read("../../files/html/favicon.ico"))

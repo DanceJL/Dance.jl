@@ -1,4 +1,3 @@
-import Dance
 import HTTP
 import JSON
 
@@ -25,7 +24,7 @@ function make_and_test_request_post(path::String, payload::Union{Array, Dict}, s
 end
 
 
-function project_settings_and_launch() :: Bool
+function project_settings() :: Nothing
     ## Add `dev.jl` file with 1 overwrite & 1 new entry ##
     cd("demo/settings")
 
@@ -40,17 +39,15 @@ function project_settings_and_launch() :: Bool
     end
 
     cd("..")
-
-    Dance.pre_launch(abspath(pwd()))
 end
 
 
 function routes(file_suffix::String) :: Nothing
-    cd("demo")
     open("routes.jl", "w") do io_routes
         open("../sample/routes/" * file_suffix * ".jl") do io_file
             write(io_routes, io_file)
         end
     end
-    cd("..")
+
+    nothing
 end
