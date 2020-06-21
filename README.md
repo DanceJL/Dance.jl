@@ -116,7 +116,7 @@ for all cases.
 If some routes share same path prefix or if you want to avoid repeating kwarg parameters, routes can be grouped into route groups as follows:
 
 ```julia
-route_group(route_prefix="/dict", method=GET, endpoint=HTML, [
+route_group(route_prefix="/dict", method=GET, endpoint=EP_HTML, [
     (path=r"/(?<value>\d.)", action=dict_1)
     (path=r"/(?<key>\w+)/(?<value>\d{3})", action=dict_2, html_file="html/file")
 ])
@@ -143,7 +143,7 @@ If you have some other files that you would like to add individually, one can do
 For instance if you have `image.jpg` in `files` relative to project root:
 
 ```julia
-route("/files/image.jpg", output_file_as_string; method=GET, endpoint=STATIC)
+route("/files/image.jpg", output_file_as_string; method=GET, endpoint=EP_STATIC)
 ```
 
 ## 5 - Launching

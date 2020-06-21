@@ -13,13 +13,17 @@ const GET= "GET"
 const POST= "POST"
 const METHODS = [GET, POST]
 
-const HTML = "HTML"
-const JSON = "JSON"
-const STATIC = "STATIC"
-const ENDPOINTS = [HTML, JSON, STATIC]
+const EP_HTML = "HTML"
+const EP_JSON = "JSON"
+const EP_STATIC = "STATIC"
+const ENDPOINTS = [EP_HTML, EP_JSON, EP_STATIC]
 
 STATIC_DIR = ""
 STATIC_ROUTE_PREFIX = ""
+
+
+export GET, POST, EP_HTML, EP_JSON, EP_STATIC, output_file_as_string, route, route_group, static_dir
+
 
 mutable struct Route
     endpoint::String
@@ -39,7 +43,7 @@ mutable struct Route
         error::String = ""
 
         if !(endpoint in ENDPOINTS)
-            error = "Invalid endpoint. Must be \"HTML\" or \"JSON\""
+            error = "Invalid endpoint. Must be \"EP_HTML\" or \"EP_JSON\" or \"EP_STATIC\""
         elseif !(method in METHODS)
             error = "Invalid method. Must be \"GET\" or \"POST\""
         elseif path_already_exists(path)
@@ -220,7 +224,7 @@ function populate(file_path::String) :: Bool
     end
 
     # Add favicon.ico
-    route("/favicon.ico", output_file_as_string; method=GET, endpoint=STATIC)
+    route("/favicon.ico", output_file_as_string; method=GET, endpoint=EP_STATIC)
 
     return is_success
 end

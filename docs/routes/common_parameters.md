@@ -28,8 +28,8 @@ end
 
 
 
-route(r"/dict/(?<value>\d.)", dict_1; method=GET, endpoint=HTML)
-route(r"/dict/(?<key>\w+)/(?<value>\d{3})", dict_2; method=GET, endpoint=HTML)
+route(r"/dict/(?<value>\d.)", dict_1; method=GET, endpoint=EP_HTML)
+route(r"/dict/(?<key>\w+)/(?<value>\d*\.\d*)", dict_2; method=GET, endpoint=EP_HTML)
 route(r"/post/dict/(?<value>\d{3})", post_2)
 ```
 

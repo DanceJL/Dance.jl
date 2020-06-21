@@ -5,4 +5,4 @@ function hello() :: String
     return "Hello World"
 end
 
-route("/", hello; method=GET, endpoint=HTML)
+route("/", hello; method=GET, endpoint=EP_HTML)

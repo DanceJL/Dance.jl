@@ -30,12 +30,12 @@ function get_dict() :: Dict{Symbol, Int64}
 end
 
 
-route("/", get_string; method=GET, endpoint=HTML)
-route("/dict", get_dict; method=GET, endpoint=HTML)
-route("/dataframe", get_df; method=GET, endpoint=HTML)
+route("/", get_string; method=GET, endpoint=EP_HTML)
+route("/dict", get_dict; method=GET, endpoint=EP_HTML)
+route("/dataframe", get_df; method=GET, endpoint=EP_HTML)
 ```
 
-- Note that `method=GET` and `endpoint=HTML` have to be specified, as default is `POST` and `JSON` respectively.
+- Note that `method=GET` and `endpoint=EP_HTML` have to be specified, as default is `POST` and `JSON` respectively.
 - **`html_file` is only should you decide to use different HTML template than default one specified in settings.**
 - Named urls are possible by specifying `name`, though including them in static HTML output is a pending feature.
 - To parse the JSON string under `<div id="js-dance-json-data">` HTML tag, one has to do so via JavaScript script.
