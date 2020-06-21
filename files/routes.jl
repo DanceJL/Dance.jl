@@ -1,7 +1,7 @@
 using Dance.Router
 
 
-function hello() :: String
+function hello(headers::Dict{String, String}) :: String
     return "Hello World"
 end
 

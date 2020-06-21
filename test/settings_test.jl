@@ -14,4 +14,12 @@ Dance.populate_settings(joinpath(abspath(@__DIR__), "demo"))
 @test Dance.Configuration.Settings[:foo]=="bar"
 
 
+# Extra test to test against `files/routes.jl` default contents
+@testset "HTTP.listen" begin
+    @async include(joinpath(abspath(pwd()), "dance.jl"))
+    sleep(1)
+    make_and_test_request_get("/", 200, Dict("Content-Type" => "text/html; charset=UTF-8"), 217, false, "Hello World")
+end
+
+
 delete_project()
