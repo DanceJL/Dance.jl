@@ -1,10 +1,10 @@
 # Common Parameters
 
-## 1 - Regex Parameters
+## 1 - Input Parameters
 
 Dance being a web framework, routes can of course contain parameters.
 
-Format must follow  PCRE regex containing parameter names.
+Format must follow PCRE regex containing parameter names.
 
 Example routes can be:
 
@@ -40,15 +40,20 @@ As you can see are supported:
 
 **Note that**:
 
-- Function routes params dict is **first input parameter, in case of JSON post route type**.
-- Format of the route params dict is **Dict{Symbol, Union{Float64, Int64, String}}**.
+- Function routes params dict is **first input parameter, in case of Regex type route.**
+If non-Regex, this parameter is not passed.
+- If HTTP POST body is supplied (for HTTP GET this parameter is not passed), this will be next parameter.
+Format is subset of **Dict{Symbol, Union{Float64, Int64, String}}** or **DataFrames.DataFrame**.
+That is depending on whether **JSON dict or array** was sent via request.
+- Format of received HTTP Headers is **Dict{String, String}**.
+**This last parameter must always be supplied to function**.
 
 ## 2 - Optional HTTP Header
 
 One can set additional HTTP headers for both HTML and JSON API endpoints.
 
 To do so simply add the desired headers as second output parameter of the function linked to route in question.
-Format must be `Dict{String, String}`.
+**Format must be `Dict{String, String}`**.
 
 ```julia
 import DataFrames

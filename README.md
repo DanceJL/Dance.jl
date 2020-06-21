@@ -7,7 +7,7 @@
 ## 1 - Introduction
 
 Julia is an excellent backend language ([read more](https://cloud4scieng.org/2018/12/13/julia-distributed-computing-in-the-cloud/)), powering numerous Artificial Intelligence and Big Data applications.
-However integrating these results into web output is not the job of a data scientist, nor should it be complicated.
+However,  integrating these results into web output is not the job of a data scientist, nor should it be complicated.
 
 That said, the aim of Dance is to facilitate process by allowing output/reception of:
 
@@ -57,11 +57,11 @@ This will create a new directory specified by `project name` parameter and copy 
 
 Files include:
 
-- `dance.jl` : main entry point of Dance to be always called from terminal
-- `routes.jl` : main routes list file
-- `settings/Global.jl` : main project settings
-- `html/base.html` : for HTML outputs this is default template
-- `html/favicon.ico` : favicon for HTML pages
+- `dance.jl`: main entry point of Dance to be always called from terminal
+- `routes.jl`: main routes list file
+- `settings/Global.jl`: main project settings
+- `html/base.html`: for HTML outputs this is default template
+- `html/favicon.ico`: favicon for HTML pages
 
 Depending on environment, other files can be included under `settings` directory to overwrite those under `Global.jl`:
 
@@ -166,4 +166,4 @@ This is also particularly useful should you be planning on using cluster of mach
 
 **That said please only use this feature should your website expect heavy traffic or output functions be resource intensive, as else performance will degrade as spawning and data transfer between processes are expensive operations.**
 
-To do so edit the upper part of `dance.jl` as indicated in file.
+To do so edit the upper part of `dance.jl` as indicated in the file.
