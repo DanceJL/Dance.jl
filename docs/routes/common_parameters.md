@@ -9,17 +9,17 @@ Format must follow  PCRE regex containing parameter names.
 Example routes can be:
 
 ```julia
-function dict_1(params_dict::Dict{Symbol, Union{Float64, Int64, String}}) :: Dict{Symbol, Float64}
+function dict_1(params_dict::Dict{Symbol, Int64}, headers::Dict{String, String}) :: Dict{Symbol, Int64}
     return Dict(:a => params_dict[:value])
 end
 
 
-function dict_2(params_dict::Dict{Symbol, Union{Float64, Int64, String}}) :: Dict{Symbol, Int64}
+function dict_2(params_dict::Dict{Symbol, Union{Float64, String}}, headers::Dict{String, String}) :: Dict{Symbol, Float64}
     return Dict(Symbol(params_dict[:key]) => params_dict[:value])
 end
 
 
-function post_dict(params_dict::Dict{Symbol, Union{Float64, Int64, String}}, dict::Dict) :: Dict{Symbol, Int64}
+function post_dict(params_dict::Dict{Symbol, Int64}, dict::Dict, headers::Dict{String, String}) :: Dict{Symbol, Int64}
     for key in keys(dict)
         dict[key] = params_dict[:value]
     end
@@ -56,7 +56,7 @@ import DataFrames
 using Dance.Router
 
 
-function post_df(df::DataFrames.DataFrame) :: Tuple{DataFrames.DataFrame, Dict{String, String}}
+function post_df(df::DataFrames.DataFrame, headers::Dict{String, String}) :: Tuple{DataFrames.DataFrame, Dict{String, String}}
     return df, Dict("foo" => "bar")
 end
 

@@ -85,15 +85,21 @@ If error during process, render 500 response
 
 Render 400 if badly supplied payload data
 """
-function process_backend_function(;route::Router.Route, route_segments::Array{String, 1}, payload::String) :: Dict{Symbol, Union{Dict, Int64, String}}
+function process_backend_function(;route::Router.Route, route_segments::Array{String, 1}, payload::String, headers::Array) :: Dict{Symbol, Union{Dict, Int64, String}}
     data::OUTPUT_DATA_FORMATS = ""
-    headers::Dict{String, String} = Dict()
+    headers_dict::Dict{String, String} = Dict()
+    output_headers::Dict{String, String} = Dict()
     output::Union{Tuple, OUTPUT_DATA_FORMATS} = ""
     received_data::Union{DataFrames.DataFrame, Union{Array{Any,1}, Dict}} = Dict()
     rendered_dict::Dict{Symbol, Union{Dict, Int64, String}} = Dict()
     route_params_dict::Dict{Symbol, ROUTE_PARAMS_FORMATS} = Dict()
 
-    if route.endpoint==Router.JSON && length(payload)>0
+    # Convert received headers format
+    for item in headers
+        headers_dict[item[1]] = item[2]
+    end
+
+    if route.endpoint==Router.EP_JSON && length(payload)>0
         can_proceed::Bool = false
         try
             json_decoded_data::Union{Array{Any,1}, Dict} = JSON.parse(payload)
@@ -110,34 +116,35 @@ function process_backend_function(;route::Router.Route, route_segments::Array{St
             try
                 if route.has_regex
                     route_params_dict = build_route_params_dict(;request_route_segments=route_segments, route_path=route.path)
-                    output = route.action(route_params_dict, received_data)
+                    output = route.action(route_params_dict, received_data, headers_dict)
                 else
-                    output = route.action(received_data)
+                    output = route.action(received_data, headers_dict)
                 end
-                headers, data = map_route_function_output(output)
-                rendered_dict = render_200(;headers=headers, endpoint=route.endpoint, data=data, html_file=route.html_file)
+                output_headers, data = map_route_function_output(output)
+                rendered_dict = render_200(;headers=output_headers, endpoint=route.endpoint, data=data, html_file=route.html_file)
             catch e
                 rendered_dict = render_500(;endpoint=route.endpoint, data=e, html_file=route.html_file, request_path=route.path)
             end
         end
-    elseif route.endpoint==Router.JSON || route.endpoint==Router.HTML
+    elseif route.endpoint==Router.EP_JSON || route.endpoint==Router.EP_HTML
         try
             if route.has_regex
                 route_params_dict = build_route_params_dict(;request_route_segments=route_segments, route_path=route.path)
-                output = route.action(route_params_dict)
+                output = route.action(route_params_dict, headers_dict)
             else
-                output = route.action()
+                output = route.action(headers_dict)
             end
-            headers, data = map_route_function_output(output)
-            rendered_dict = render_200(;headers=headers, endpoint=route.endpoint, data=data, html_file=route.html_file)
+            output_headers, data = map_route_function_output(output)
+            rendered_dict = render_200(;headers=output_headers, endpoint=route.endpoint, data=data, html_file=route.html_file)
         catch e
             rendered_dict = render_500(;endpoint=route.endpoint, data=e, html_file=route.html_file, request_path=route.path)
         end
+    # Static case (no headers_dict param passed)
     else
         try
             output = route.action(route.path)
-            headers, data = map_route_function_output(output)
-            rendered_dict = render_200(;headers=headers, endpoint=route.endpoint, data=data, html_file=route.html_file)
+            output_headers, data = map_route_function_output(output)
+            rendered_dict = render_200(;headers=output_headers, endpoint=route.endpoint, data=data, html_file=route.html_file)
         catch e
             rendered_dict = render_500(;endpoint=route.endpoint, data=e, html_file=route.html_file, request_path=route.path)
         end
@@ -224,26 +231,11 @@ function render(;request_headers::Array, request_method::String, request_path::S
     rendered_dict::Dict{Symbol, Union{Dict, Int64, String}} = Dict()
     request_route_segments::Array{String, 1} = []
 
-    route::Union{Router.Route, Nothing} = Router.get_route(request_path)
-
-    if isa(route, Router.Route)
-        try
-            ## Check if method allowed ##
-            if route.method==request_method
-                if route.has_regex
-                    request_route_segments = URIUtils.get_path_param_segments(;request_path=request_path, route_path=route.path)
-                end
-                rendered_dict = process_backend_function(;route=route, route_segments=request_route_segments, payload=request_payload)
-            else
-                rendered_dict = render_405(;endpoint=route.endpoint, html_file=route.html_file)
-            end
-        catch e
-            rendered_dict = render_500(;endpoint=route.endpoint, data=string(e), html_file=route.html_file, request_path=route.path)
-        end
-    else
+    function _render_404_from_content_type(request_headers::Array) :: Dict{Symbol, Union{Dict, Int64, String}}
         ## Check Headers if was JSON request, to return 404 in JSON format ##
         content_type::String = ""
-        endpoint::String = Router.HTML
+        endpoint::String = Router.EP_HTML
+
         try
             for pair in request_headers
                 if pair.first=="Content-Type"
@@ -251,13 +243,32 @@ function render(;request_headers::Array, request_method::String, request_path::S
                 end
             end
             if content_type=="application/json"
-                endpoint = Router.JSON
+                endpoint = Router.EP_JSON
             end
         catch e
             nothing
         end
 
-        rendered_dict = render_404(;endpoint=endpoint)
+        return render_404(;endpoint=endpoint)
+    end
+
+    route::Union{Router.Route, Nothing} = Router.get_route(request_path)
+    if isa(route, Router.Route)
+        try
+            ## Check if method allowed ##
+            if route.method==request_method
+                if route.has_regex
+                    request_route_segments = URIUtils.get_path_param_segments(;request_path=request_path, route_path=route.path)
+                end
+                rendered_dict = process_backend_function(;route=route, route_segments=request_route_segments, payload=request_payload, headers=request_headers)
+            else
+                rendered_dict = render_405(;endpoint=route.endpoint, html_file=route.html_file)
+            end
+        catch e
+            rendered_dict = render_500(;endpoint=route.endpoint, data=string(e), html_file=route.html_file, request_path=route.path)
+        end
+    else
+        rendered_dict = _render_404_from_content_type(request_headers)
     end
 
     ## Automaticlly set `Content-Type`, `Content-Length` and `Date` Headers ##

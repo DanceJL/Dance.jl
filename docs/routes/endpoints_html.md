@@ -15,17 +15,17 @@ import DataFrames
 using Dance.Router
 
 
-function get_string() :: String
+function get_string(headers::Dict{String, String}) :: String
     return "Hello World"
 end
 
 
-function get_df() :: DataFrames.DataFrame
+function get_df(headers::Dict{String, String}) :: DataFrames.DataFrame
     return DataFrames.DataFrame(A = 1:4, B = ["A", "B", "C", "D"])
 end
 
 
-function get_dict() :: Dict{Symbol, Int64}
+function get_dict(headers::Dict{String, String}) :: Dict{Symbol, Int64}
     return Dict(:a => 123)
 end
 
