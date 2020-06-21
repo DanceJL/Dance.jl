@@ -18,6 +18,7 @@ Settings = Dict(
 Check if is Production environment
 """
 function is_prod() :: Bool
+    global Settings
     return !parse(Bool, Settings[:dev])
 end
 
@@ -74,8 +75,10 @@ function populate(file_path) :: Bool
 
                             # Populate/update Settings dict
                             if haskey(Settings, Symbol(key))
+                                global Settings
                                 Settings[Symbol(key)] = value
                             else
+                                global Settings
                                 push!(Settings, Symbol(key) => value)
                             end
                         end
@@ -93,9 +96,11 @@ function populate(file_path) :: Bool
     ### Set default server values for Dev environment ###
     if !is_prod()
         if Settings[:server_host]==""
+            global Settings
             Settings[:server_host] = "127.0.0.1"
         end
         if Settings[:server_port] ==""
+            global Settings
             Settings[:server_port] = 8000
         end
     end

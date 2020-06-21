@@ -29,6 +29,7 @@ function launch(start_server::Bool) :: Union{REPL.REPLBackend, Nothing}
     if start_server
         server_host::String = Configuration.Settings[:server_host]
         server_port::Int64 = Configuration.Settings[:server_port]
+
         @info "Web server started at $server_host:$server_port"
         CoreEngine.start_server(server_host, server_port)
     else
@@ -41,17 +42,99 @@ end
 
 
 """
-    pre_launch(file_path::String)
+    populate_load_path(file_path::String; ignore_dirs::Array{String, 1})
 
-- Populate Configuration.Settings dict
-- Populate Router.ROUTES OrderedDict (when including/compiling Julia files)
+- Read Settings dict for routes filepath
+- Get static dir by parsing routes.jl
+
+- Optional: array of other paths to ignore
 """
-function pre_launch(file_path::String) :: Bool
-    if Configuration.populate(file_path)
-        Router.populate(file_path)
-    else
-        false
+function populate_load_path(file_path::String; ignore_dirs::Array{String, 1}) :: Array{String, 1}
+    dirs_ignore_array::Array{String, 1} = [".git", ".hg"]
+    load_path_array::Array{String, 1} = [abspath(file_path)]
+
+    function _get_static_dir() :: String
+        static_dir::String = ""
+
+        for line in readlines(joinpath(file_path, Configuration.Settings[:routes_filename]*".jl"))
+            if occursin("static_dir(", line)
+                static_dir = replace(
+                    strip(
+                        split(
+                            split(
+                                split(line, ",")[2],
+                                ")"
+                            )[1],
+                            "/"
+                        )[1]
+                    ),
+                    "\"" => ""
+                )
+            end
+        end
+
+        return static_dir
     end
+
+    function _populate_load_path() :: Nothing
+        for item in readdir(file_path)
+            if isdir(item) && !(item in filter(x -> !occursin("/", x), dirs_ignore_array))
+                for (root, dirs, files) in walkdir(item)
+                    for dir in dirs
+                        if size(split(root, "/"))[1]==1
+                            for ignore_dir in dirs_ignore_array
+                                if !occursin(abspath(ignore_dir), abspath(joinpath(root)))
+                                    if !(abspath(root) in load_path_array)
+                                        push!(load_path_array, abspath(root))
+                                    end
+                                end
+                            end
+                        end
+
+                        ignore_dirs_contains_dir_counter::Int8 = 0
+                        for ignore_dir in dirs_ignore_array
+                            if occursin(abspath(ignore_dir), abspath(joinpath(root, dir)))
+                                ignore_dirs_contains_dir_counter = 1
+                                break
+                            end
+                        end
+                        if ignore_dirs_contains_dir_counter==0
+                            if !(abspath(joinpath(root, dir)) in load_path_array)
+                                push!(load_path_array, abspath(joinpath(root, dir)))
+                            end
+                        end
+                    end
+                end
+            end
+        end
+        nothing
+    end
+
+    push!(dirs_ignore_array, _get_static_dir())
+    dirs_ignore_array = vcat(dirs_ignore_array, ignore_dirs)
+    _populate_load_path()
+
+    return load_path_array
+end
+
+
+"""
+    populate_router(file_path::String)
+
+Populate Router.ROUTES OrderedDict (when including/compiling Julia files)
+"""
+function populate_router(file_path::String) :: Bool
+    return Router.populate(file_path)
+end
+
+
+"""
+    populate_settings(file_path::String)
+
+Populate Configuration.Settings dict
+"""
+function populate_settings(file_path::String) :: Bool
+    return Configuration.populate(file_path)
 end
 
 

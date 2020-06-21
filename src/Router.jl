@@ -190,7 +190,6 @@ function populate(file_path::String) :: Bool
     routes_filepath::String = joinpath(file_path, Configuration.Settings[:routes_filename]*".jl")
 
     if isfile(routes_filepath)
-        include(routes_filepath)
         is_success = true
     else
         @error "Populating Routes: file not found at $routes_filepath"

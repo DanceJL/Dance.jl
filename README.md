@@ -65,20 +65,8 @@ Files include:
 
 Depending on environment, other files can be included under `settings` directory to overwrite those under `Global.jl`:
 
-- One can add other parameters under these settings files, that will be accessible in project by reading `Dance.Configuration.Settings` dict.
-- As this has to be done from same `import Dance` as launch of project, best to do under `dance.jl` file as follows:
-
-	```julia
-	## Add custom scripts here that need be run before launching Dance ##
-	function populate(dict::Dict)
-        for (key, value) in dict
-            ENV[String(key)] = value
-        end
-	end
-
-	populate(Dance.Configuration.Settings)
-	```
-
+- One can add other parameters under these settings files, that will be accessible in project by reading from `Main.Settings` dict.
+ENV has been avoided due to potential leakage security issues.
 - **Is recommended to use `secrets.jl` file included under `Global.jl` that will not be stored in version control, for sensitive authentication data.**
 
 Can be overwritten/moved:
@@ -164,9 +152,12 @@ one can enter the REPL mode after project environment has been loaded.
 Press `ctrl` + `d` to exit.
 
 ## 6 - Module Loading & Custom Startup Script
-Note that when launching, Dance will add current dir as module import path.
+Note that when launching, Dance will add the current dir, as well as all sub-directories as module import path.
 
-Should you require to load modules from other locations or run a custom startup script, once can add that by editing `dance.jl` as specified within file.
+By `static_dir` as defined in `routes.jl` will be ignored during the procedure, as described under `STEP 1` of `dance.jl` file.
+Should you require ignoring other directories for startup performance optimisation, please populate `ignore_dirs` under `STEP 1`.
+
+As outlined under `STEP 3` of `dance.jl` file, any custom scripts can be added, that will be run before Dance launches server/REPL.
 
 ## 7 - Running Dance Under Multi-processing Environment
 
