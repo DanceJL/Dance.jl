@@ -37,7 +37,6 @@ route("/dataframe", get_df; method=GET, endpoint=EP_HTML)
 
 - Note that `method=GET` and `endpoint=EP_HTML` have to be specified, as default is `POST` and `JSON` respectively.
 - **`html_file` is only should you decide to use different HTML template than default one specified in settings.**
-- Named urls are possible by specifying `name`, though including them in static HTML output is a pending feature.
 - To parse the JSON string under `<div id="js-dance-json-data">` HTML tag, one has to do so via JavaScript script.
   For instance with jQuery, one would use `jQuery.parseJSON()` function.
 

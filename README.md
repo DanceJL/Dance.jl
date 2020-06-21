@@ -94,7 +94,7 @@ Can be overwritten/moved:
 Routes can be included in main routes file (`routes.jl` by default), as follows:
 
 ```julia
-route(path::Union{Regex, String}, action::Function; method::String=POST, endpoint=JSON, html_file::String=Configuration.Settings[:html_base_filename]*".html", name::Union{Symbol,Nothing}=nothing)
+route(path::Union{Regex, String}, action::Function; method::String=POST, endpoint=EP_JSON, html_file::String=Configuration.Settings[:html_base_filename]*".html")
 ```
 
 - Just `path`and `function` are mandatory, *kwargs* can overwrite default values as necessary.
@@ -102,7 +102,6 @@ route(path::Union{Regex, String}, action::Function; method::String=POST, endpoin
 That said, note that:
 - `path` can either be fixed string or contain PCRE regex containing parameter names.
 - Adding an ending slash (`/`) tp `path` is optional, as incoming requests will have pending slash stripped.
-- Named urls are possible by specifying `name`, though including them in static HTML output is a pending feature.
 
 Please see:
 - [Common Parameters](docs/routes/common_parameters.md)

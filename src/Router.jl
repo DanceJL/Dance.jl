@@ -32,14 +32,13 @@ mutable struct Route
     has_regex::Bool
     action::Function
     html_file::String
-    name::Symbol
 
     """
-        Route(;endpoint::String, method::String, path::String, has_regex::Bool, action::Function, html_file::String, name::Symbol)
+        Route(;endpoint::String, method::String, path::String, has_regex::Bool, action::Function, html_file::String)
 
     Create new Route object, by validating supplied Route parameters
     """
-    function Route(;endpoint::String, method::String, path::String, has_regex::Bool, action::Function, html_file::String, name::Symbol) :: Route
+    function Route(;endpoint::String, method::String, path::String, has_regex::Bool, action::Function, html_file::String) :: Route
         error::String = ""
 
         if !(endpoint in ENDPOINTS)
@@ -64,7 +63,7 @@ mutable struct Route
         end
 
         if length(error)==0
-            return new(endpoint, method, path, has_regex, action, html_file, name)
+            return new(endpoint, method, path, has_regex, action, html_file)
         else
             Logger.log("Route construction for `$path`: $error")
         end
@@ -72,33 +71,6 @@ mutable struct Route
 end
 
 const ROUTES = OrderedCollections.OrderedDict{String, Route}()
-
-
-"""
-    create_route_name_from_path(path::String) :: Symbol
-
-Create name from path string by:
-- Removing leading slash
-- Adding integer suffix to path
-"""
-function create_route_name_from_path(path::String) :: Symbol
-    idx::Int128 = 0
-    name = path[2:end]
-
-    # Index url case
-    if length(name)==0
-        name = "index"
-    end
-
-    name_symbol::Symbol = Symbol(name)
-
-    while haskey(ROUTES, name_symbol)
-        idx += 1
-        name_symbol = Symbol(name, "$idx")
-    end
-
-    return name_symbol
-end
 
 
 """
@@ -245,14 +217,13 @@ end
 
 
 """
-    route(path::Union{Regex, String}, action::Function; method::String=POST, endpoint=JSON, html_file::String=Configuration.Settings[:html_base_filename]*".html", name::Union{Symbol,Nothing}=nothing)
+    route(path::Union{Regex, String}, action::Function; method::String=POST, endpoint=EP_JSON, html_file::String=Configuration.Settings[:html_base_filename]*".html")
 
 Create new Route and add to ROUTES ordered dict
 - If path is Regex, convert to String for storage (Route has `has_regex` field)
 - Remove trailing slash
-- If supplied name is nothing, generate from path and eventual number suffix, converting `/` to `-` in process
 """
-function route(path::Union{Regex, String}, action::Function; method::String=POST, endpoint::String=JSON, html_file::String=Configuration.Settings[:html_base_filename]*".html", name::Union{Symbol,Nothing}=nothing) :: OrderedCollections.OrderedDict{String, Route}
+function route(path::Union{Regex, String}, action::Function; method::String=POST, endpoint::String=EP_JSON, html_file::String=Configuration.Settings[:html_base_filename]*".html") :: OrderedCollections.OrderedDict{String, Route}
     has_regex::Bool = isa(path, Regex)
 
     if has_regex
@@ -270,13 +241,7 @@ function route(path::Union{Regex, String}, action::Function; method::String=POST
         @error "Route must start with leading slash"
     end
 
-    # No `name` param supplied
-    if isnothing(name)
-        name = create_route_name_from_path(path)
-    end
-    name = Symbol(lstrip(replace(string(name), "/" => "-"), '-'))
-
-    push!(ROUTES, path => Route(endpoint=endpoint, method=method, path=path, has_regex=has_regex, action=action, html_file=html_file, name=name))
+    push!(ROUTES, path => Route(endpoint=endpoint, method=method, path=path, has_regex=has_regex, action=action, html_file=html_file))
 end
 
 
@@ -290,7 +255,6 @@ Loop through array of named tuple routes, calling `route` function
 function route_group(routes::Array; route_prefix::String="", method::String="", endpoint::String="", html_file::String=Configuration.Settings[:html_base_filename]*".html") :: Union{Nothing, OrderedCollections.OrderedDict{String, Route}}
     for item in routes
         if isa(item, NamedTuple)
-            name::Union{Nothing, Symbol} = nothing
             path::Union{Regex, String} = ""
 
             for idx in [:path, :action]
@@ -322,11 +286,7 @@ function route_group(routes::Array; route_prefix::String="", method::String="", 
                 html_file = item.html_file
             end
 
-            if :name in keys(item)
-                name = item.name
-            end
-
-            route(path, item.action; method=method, endpoint=endpoint, html_file=html_file, name=name)
+            route(path, item.action; method=method, endpoint=endpoint, html_file=html_file)
         else
             @error "Please supply route $item as NamedTuple"
         end
@@ -353,7 +313,7 @@ function static_dir(route_prefix::String, dir_path::String) :: Nothing
                     path = replace(path, "\\" => "/")
                 end
 
-                route(path, output_file_as_string; method=GET, endpoint=STATIC)
+                route(path, output_file_as_string; method=GET, endpoint=EP_STATIC)
             end
         end
     end
