@@ -106,7 +106,8 @@ function get_route(route_path::String) :: Union{Route, Nothing}
             route_number_of_params::Int8 = length(collect(eachmatch(URIUtils.ROUTE_REGEX_BASIC_STRUCTURE, path)))
             if route.has_regex && request_path_number_of_segments==route_number_of_params
                 try
-                    if isa(match(Regex(path), route_path), RegexMatch)
+                    m::Union{RegexMatch, Nothing} = match(Regex(path), route_path)
+                    if isa(m, RegexMatch) && length(m.match)==length(route_path)
                         found_route = route
                     end
                 catch e
