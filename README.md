@@ -159,7 +159,45 @@ Should you require ignoring other directories for startup performance optimisati
 
 As outlined under `STEP 3` of `dance.jl` file, any custom scripts can be added, that will be run before Dance launches server/REPL.
 
-## 7 - Running Dance Under Multi-processing Environment
+## 7 - Security
+
+### 7.1 - Incoming HTTP Headers
+
+**Never blindly trust an incoming HTTP request!**
+
+As all route functions receive incoming HTTP Headers, it is recommend when necessary to at least verify the `Host` and `X-Forwarded-Host` values.
+This is not included by default, in order to optimise performance, but here below a sample code, should you like to implement this extra security.
+
+```julia
+function valid_host() :: Bool
+    allowed_hosts::Array{String, 1} = [Main.Settings[:server_host]]
+    valid_forwarded_host::Bool = false
+    valid_host::Bool = false
+
+    if "127.0.0.1" in allowed_hosts
+        push!(allowed_hosts, "localhost")
+    end
+
+    if !(Main.Settings[:server_port] in [80, 443])
+        for (idx, item) in enumerate(allowed_hosts)
+            allowed_hosts[idx] = item * ":" * string(Main.Settings[:server_port])
+        end
+    end
+
+    for pair in request_headers
+        if pair.first=="Host"
+           valid_host = pair.second in allowed_hosts
+        end
+        if pair.first=="X-Forwarded-Host"
+           valid_forwarded_host = pair.second in allowed_hosts
+        end
+    end
+
+    return valid_host && valid_forwarded_host
+end
+```
+
+## 8 - Running Dance Under Multi-processing Environment
 
 Dance can be run in multi-process environment via Julia Distributed package.
 This is also particularly useful should you be planning on using cluster of machines in order to implement load balancer.
