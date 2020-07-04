@@ -110,7 +110,9 @@ function populate_load_path(file_path::String; ignore_dirs::Array{String, 1}) ::
         nothing
     end
 
-    push!(dirs_ignore_array, _get_static_dir())
+    if _get_static_dir()!=""
+        push!(dirs_ignore_array, _get_static_dir())
+    end
     dirs_ignore_array = vcat(dirs_ignore_array, ignore_dirs)
     _populate_load_path()
 
