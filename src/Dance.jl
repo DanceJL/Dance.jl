@@ -151,7 +151,11 @@ function start_project(project_name::String, path::String=".") :: Nothing
 
     mkdir(project_directory)
     cp(joinpath(@__DIR__, "../files"), project_directory; force=true)
-    if !Sys.iswindows()
+    if Sys.iswindows()
+        run(`icacls.exe $project_name /reset /T /Q`)
+        username::String = read(run(`whoami`), String)
+        run(`icacls.exe $project_name /grant $username:F /T /Q`)
+    else
         run(`chmod -R 755 $project_directory`)
     end
     @info "Project files created for $project_name"
