@@ -153,8 +153,15 @@ function start_project(project_name::String, path::String=".") :: Nothing
     cp(joinpath(@__DIR__, "../files"), project_directory; force=true)
     if Sys.iswindows()
         run(`icacls.exe $project_name /reset /T /Q`)
+        run(`icacls "$project_name" /reset /T /Q`)
         username::String = read(run(`whoami`), String)
         run(`icacls.exe $project_name /grant $username:F /T /Q`)
+        run(`icacls "$project_name" /grant "$username:(OI)(CI)(IO)F" /T /Q`)
+        run(`icacls "$project_name" /grant "$username:F" /Q`)
+
+        #= TODO: fix Windows PowerShell escape issue
+        See: https://discourse.julialang.org/t/how-to-quote-special-characters-in-run-function/21359/4 =#
+        @info "Please run REPL command `run(`attrib –r \"$project_name\\*.*\" /s`)` to finish (due to Julia <-> Windows PowerShell issue)"
     else
         run(`chmod -R 755 $project_directory`)
     end
