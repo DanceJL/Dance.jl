@@ -3,6 +3,7 @@ module JSONRenderer
 import DataFrames
 import JSON
 
+import Dance.Configuration
 import Dance.Logger
 import Dance.PayloadUtils
 
@@ -60,6 +61,7 @@ function render(;headers::Dict, status_code::Int64, data::Union{DataFrames.DataF
         end
     end
 
+    headers["Access-Control-Allow-Origin"] = Configuration.Settings[:api_access_control_allow_origin]
     return Dict(
         :headers => headers,
         :status_code => status_code,

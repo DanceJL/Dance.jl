@@ -75,6 +75,8 @@ Can be overwritten/moved:
 - `html/base.html`: move/rename and update `Settings[:html_base_filename]` accordingly
 - `html/favicon.ico`: move/rename and update `Settings[:html_favicon_name]` accordingly
 
+**=> Is recommended to overwrite `api_access_control_allow_origin` settings parameter, to limit API access to known hosts.**
+
 ## 4 - Routes
 
 ### 4.1 - General

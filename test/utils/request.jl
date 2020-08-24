@@ -49,6 +49,9 @@ function parse_and_test_request(r::HTTP.Messages.Response, status::Int64, header
     if !Sys.iswindows()
         compare_http_header(r.headers, "Content-Length", string(content_length))
     end
+    if header_get_value(r.headers, "Content-Type")=="application/json"
+        compare_http_header(r.headers, "Access-Control-Allow-Origin", Dance.Configuration.Settings[:api_access_control_allow_origin])
+    end
     compare_http_date_header(header_get_value(r.headers, "Date"), timestamp_request_completed)
 
     if is_json_body

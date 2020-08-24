@@ -1,6 +1,7 @@
 module Configuration
 
 Settings = Dict(
+    :api_access_control_allow_origin => "*",
     :dev => false,
     :engine => "HTTP",
     :html_base_filename => "html/base",
