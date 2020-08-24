@@ -256,13 +256,22 @@ function render(;request_headers::Array, request_method::String, request_path::S
     if isa(route, Router.Route)
         try
             ## Check if method allowed ##
-            if route.method==request_method
-                if route.has_regex
-                    request_route_segments = URIUtils.get_path_param_segments(;request_path=request_path, route_path=route.path)
-                end
-                rendered_dict = process_backend_function(;route=route, route_segments=request_route_segments, payload=request_payload, headers=request_headers)
+            if request_method == Router.OPTIONS
+                headers_dict::Dict{String,String} = Dict(
+                    "Allow" => route.method,
+                    "Access-Control-Allow-Methods" => route.method,
+                    "Access-Control-Allow-Headers" => "X-PINGOTHER, Content-Type"
+                )
+                rendered_dict = render_200(;headers=headers_dict, endpoint=route.endpoint, data=Dict(), html_file="")
             else
-                rendered_dict = render_405(;endpoint=route.endpoint, html_file=route.html_file)
+                if request_method==route.method
+                    if route.has_regex
+                        request_route_segments = URIUtils.get_path_param_segments(;request_path=request_path, route_path=route.path)
+                    end
+                    rendered_dict = process_backend_function(;route=route, route_segments=request_route_segments, payload=request_payload, headers=request_headers)
+                else
+                    rendered_dict = render_405(;endpoint=route.endpoint, html_file=route.html_file)
+                end
             end
         catch e
             rendered_dict = render_500(;endpoint=route.endpoint, data=string(e), html_file=route.html_file, request_path=route.path)

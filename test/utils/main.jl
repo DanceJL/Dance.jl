@@ -47,6 +47,14 @@ function make_and_test_request_get(path::String, status::Int64, headers::Dict{St
 end
 
 
+function make_and_test_request_options(path::String) :: Nothing
+    r = HTTP.request("OPTIONS", "http://127.0.0.1:8000$path")
+    compare_http_header(r.headers, "Allow", "POST")
+    compare_http_header(r.headers, "Access-Control-Allow-Methods", "POST")
+    compare_http_header(r.headers, "Access-Control-Allow-Headers", "X-PINGOTHER, Content-Type")
+end
+
+
 function make_and_test_request_post(path::String, payload::Union{Array, Dict}, status::Int64, headers::Dict{String, String}, content_length::Int64, is_json_body::Bool, body::Any) :: Nothing
     r = HTTP.request("POST", "http://127.0.0.1:8000$path", [], JSON.json(payload))
     parse_and_test_request(r, status, headers, content_length, is_json_body, body)

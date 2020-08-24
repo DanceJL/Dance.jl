@@ -31,6 +31,8 @@ routes("json")
     )
 
     # Test int url param
+    # Test using OPTIONS method before POST (see https://github.com/axios/axios/issues/475)
+    make_and_test_request_options("/post/dict/12")
     make_and_test_request_post("/post/dict/12", Dict("b" => "abc"), 200, Dict("Content-Type" => "application/json"), 8, true, Dict("b" => 12))
 
     # Test setting Header value in backend

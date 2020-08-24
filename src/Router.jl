@@ -10,8 +10,9 @@ include("mime_types.jl")
 
 
 const GET= "GET"
+const OPTIONS = "OPTIONS"
 const POST= "POST"
-const METHODS = [GET, POST]
+const METHODS = [GET, OPTIONS, POST]
 
 const EP_HTML = "HTML"
 const EP_JSON = "JSON"
