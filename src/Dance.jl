@@ -50,7 +50,7 @@ end
 - Optional: array of other paths to ignore
 """
 function populate_load_path(file_path::String; ignore_dirs::Array{String, 1}) :: Array{String, 1}
-    dirs_ignore_array::Array{String, 1} = [".git", ".hg"]
+    dirs_ignore_array::Array{String, 1} = [".git", ".hg", "node_modules"]
     load_path_array::Array{String, 1} = [abspath(file_path)]
 
     function _get_static_dir() :: String
@@ -80,6 +80,7 @@ function populate_load_path(file_path::String; ignore_dirs::Array{String, 1}) ::
         for item in readdir(file_path)
             if isdir(item) && !(item in filter(x -> !occursin("/", x), dirs_ignore_array))
                 for (root, dirs, files) in walkdir(item)
+                    push!(load_path_array, abspath(root))
                     for dir in dirs
                         if size(split(root, "/"))[1]==1
                             for ignore_dir in dirs_ignore_array

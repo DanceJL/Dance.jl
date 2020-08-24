@@ -12,6 +12,35 @@ function delete_project() :: Nothing
 end
 
 
+function dirs_add_multiple() :: Nothing
+    mkdir("code")
+    mkdir("node_modules")  # test ignores node dir
+
+    cd("code")  # test dir with file & sub-dir
+    touch("file1.jl")
+    mkdir("sub-dir1")  # test dir with only sub-dir
+    cd("sub-dir1")
+    mkdir("sub-dir2")  # test dir with file
+    cd("sub-dir2")
+    touch("file2.jl")
+
+    cd("../../..")
+    nothing
+end
+
+
+function dirs_add_single() :: Nothing
+    mkdir("code")
+    mkdir("node_modules")  # test ignores node dir
+
+    cd("code")  # test dir with file & sub-dir
+    touch("file1.jl")
+
+    cd("..")
+    nothing
+end
+
+
 function make_and_test_request_get(path::String, status::Int64, headers::Dict{String, String}, content_length::Int64, is_json_body::Bool, body::Any) :: Nothing
     r = HTTP.request("GET", "http://127.0.0.1:8000$path")
     parse_and_test_request(r, status, headers, content_length, is_json_body, body)
