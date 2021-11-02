@@ -4,9 +4,14 @@ import JSON
 include("./request.jl")
 
 
-function delete_project() :: Nothing
+function delete_project(server::Bool=true) :: Nothing
     cd("..")
     rm("demo", recursive=true)
+
+    if server
+        Dance.CoreEngine.close_server()
+    end
+
     Dance.Router.delete_routes!()
     nothing
 end

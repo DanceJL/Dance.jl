@@ -13,7 +13,7 @@ const HTTP_STATUS_PAYMENT_REQUIRED = "Payment Required"
 const HTTP_STATUS_FORBIDDEN = "Forbidden"
 const HTTP_STATUS_REQUEST_TIMEOUT = "Request Timeout"
 
-const HTTP_STATUS_ERROR_CODES = Dict{String, Int64}(
+const HTTP_STATUS_ERROR_CODES = Dict{String, Int16}(
     HTTP_STATUS_UNAUTHORIZED => 401,
     HTTP_STATUS_PAYMENT_REQUIRED => 402,
     HTTP_STATUS_FORBIDDEN => 403,
@@ -22,7 +22,7 @@ const HTTP_STATUS_ERROR_CODES = Dict{String, Int64}(
 
 
 """
-    render(;headers::Dict, status_code::Int64, data::Union{DataFrames.DataFrame, Dict})
+    render(;headers::Dict{String, String}, status_code::Int16, data::Union{DataFrames.DataFrame, Dict}) :: Dict{Symbol, Union{Dict{String, String}, Int16, String}}
 
 Output JSON renderer
 
@@ -30,7 +30,7 @@ Though `status code` is pre-supplied, can become 500
 
 Cannot set `headers type to `Dict{String, String} here, as can be blank (status_code !=200)
 """
-function render(;headers::Dict, status_code::Int64, data::Union{DataFrames.DataFrame, Dict}) :: Dict{Symbol, Union{Dict, Int64, String}}
+function render(;headers::Dict{String, String}, status_code::Int16, data::Union{DataFrames.DataFrame, Dict}) :: Dict{Symbol, Union{Dict{String, String}, Int16, String}}
     body::Union{Array{Any,1}, Dict} = Dict()
 
     # One of HTTP_STATUS_ERROR_CODES is supplied as data{Dict}

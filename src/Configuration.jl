@@ -3,7 +3,6 @@ module Configuration
 Settings = Dict(
     :api_access_control_allow_origin => "*",
     :dev => false,
-    :engine => "HTTP",
     :html_base_filename => "html/base",
     :html_favicon_name => "html/favicon",
     :log_filename => "log/dancejl",

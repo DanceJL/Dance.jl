@@ -32,7 +32,7 @@ end
 
 
 """
-    render(;headers::Dict, status_code::Int64, data::Union{DataFrames.DataFrame, Dict, String}, html_file::String)
+    render(;headers::Dict{String, String}, status_code::Int16, data::Union{DataFrames.DataFrame, Dict, String}, html_file::String) :: Dict{Symbol, Union{Dict{String, String}, Int16, String}}
 
 HTML renderer
 
@@ -40,7 +40,7 @@ HTML renderer
 
 Cannot set `headers type to `Dict{String, String} here, as can be blank (status_code !=200)
 """
-function render(;headers::Dict, status_code::Int64, data::Union{DataFrames.DataFrame, Dict, String}, html_file::String) :: Dict{Symbol, Union{Dict, Int64, String}}
+function render(;headers::Dict{String, String}, status_code::Int16, data::Union{DataFrames.DataFrame, Dict, String}, html_file::String) :: Dict{Symbol, Union{Dict{String, String}, Int16, String}}
     if status_code==500
         Logger.log("500 Internal Server Error when rendering page with $data")
     end

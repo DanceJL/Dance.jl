@@ -29,7 +29,7 @@ end
     @test haskey(Dance.Configuration.Settings, :foo)
     @test Dance.Configuration.Settings[:foo]=="bar"
 
-    delete_project()
+    delete_project(false)
 end
 
 
