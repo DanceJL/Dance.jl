@@ -36,6 +36,7 @@ routes("json")
     make_and_test_request_post("/post/dict/12", Dict("b" => "abc"), 200, Dict("Content-Type" => "application/json"), 8, true, Dict("b" => 12))
 
     # Test setting Header value in backend
+    # Test accented character, for correct UTF-8 length
     make_and_test_request_post(
         "/post/dataframe/",
         [
@@ -43,18 +44,18 @@ routes("json")
             [1, "M"],
             [2, "F"],
             [3, "G"],
-            [4, "Z"]
+            [4, "ñ"]
         ],
         200,
         Dict("Content-Type" => "application/json", "foo" => "bar"),
-        43,
+        44,
         true,
         [
             ["A", "B"],
             [1, "M"],
             [2, "F"],
             [3, "G"],
-            [4, "Z"]
+            [4, "ñ"]
         ]
     )
 end

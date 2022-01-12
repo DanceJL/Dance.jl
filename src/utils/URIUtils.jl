@@ -1,6 +1,6 @@
 module URIUtils
 
-const ROUTE_REGEX_BASIC_STRUCTURE = r"([^\/(?<]+)+"
+const ROUTE_REGEX_BASIC_STRUCTURE = r"\/(\(\?<)?[^\/\>\)]+(\>)?([^\/]+(\\\/)?[^\/]+)"
 const ROUTE_REGEX_PARAM_ONLY = r"(<[^\/(?)]+)+"
 
 
