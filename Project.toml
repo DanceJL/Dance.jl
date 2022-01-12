@@ -14,14 +14,16 @@ REPL = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
 
 [compat]
 DataFrames = ">= 0.20.2"
+Flamenco = ">=0.1.2"
 JSON3 = ">=v1.9.2"
 OrderedCollections = ">= 1.1.0"
-julia = "1.1"
+julia = "1.7"
 
 [extras]
 HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
+JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 SafeTestsets = "1bc83da4-3b8d-516f-aca4-4fe02f6d838f"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["HTTP", "SafeTestsets", "Test"]
+test = ["HTTP", "JSON", "SafeTestsets", "Test"]
