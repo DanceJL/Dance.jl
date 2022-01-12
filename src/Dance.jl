@@ -1,5 +1,6 @@
 module Dance
 
+import Pkg
 import REPL
 
 include("Configuration.jl")
@@ -150,8 +151,42 @@ end
 function start_project(project_name::String, path::String=".") :: Nothing
     project_directory::String = joinpath(abspath(path), project_name)
 
-    mkdir(project_directory)
-    cp(joinpath(@__DIR__, "../files"), project_directory; force=true)
+    Pkg.generate(project_name)
+    rm(joinpath(project_directory, "src"); recursive=true)
+    for (root, dirs, files) in walkdir(joinpath(@__DIR__, "../files"))
+        for file in files
+            cp(joinpath(root, file), joinpath(project_directory, file); force=true)
+        end
+        for dir in dirs
+            mkdir(joinpath(project_directory, dir))
+            for (root2, dirs2, files2) in walkdir(joinpath(root, dir))
+                for file in files2
+                    cp(joinpath(root, dir, file), joinpath(project_directory, dir, file); force=true)
+                end
+            end
+        end
+    end
+
+    project_name = titlecase(project_name)
+    mv(
+        joinpath(project_directory, "src/MyPkg.jl"),
+        joinpath(project_directory, "src/$project_name.jl")
+    )
+    for file_name in [
+        joinpath(project_directory, "src/$project_name.jl"),
+        joinpath(project_directory, "dance.jl"),
+    ]
+        lines = readlines(file_name)
+        open(file_name, "w") do io
+            for line in lines
+                if match(r"MyPkg", line) !== nothing
+                    line = replace(line, "MyPkg" => project_name)
+                end
+                println(io, line)
+            end
+        end
+    end
+
     if Sys.iswindows()
         run(`icacls.exe $project_name /reset /T /Q`)
         run(`icacls "$project_name" /reset /T /Q`)

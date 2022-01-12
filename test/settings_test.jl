@@ -42,12 +42,12 @@ end
     @async include(joinpath(abspath(pwd()), "dance.jl"))
     sleep(5)
 
-    @test _build_path() in LOAD_PATH
+    @test abspath(pwd()) * "/" in LOAD_PATH
     @test _build_path("html") in LOAD_PATH
     @test _build_path("settings") in LOAD_PATH
     @test _build_path("code") in LOAD_PATH
 
-    delete_project()
+    delete_project(false)
 end
 
 
@@ -60,14 +60,14 @@ end
     @async include(joinpath(abspath(pwd()), "dance.jl"))
     sleep(2)
 
-    @test _build_path() in LOAD_PATH
+    @test abspath(pwd()) * "/" in LOAD_PATH
     @test _build_path("html") in LOAD_PATH
     @test _build_path("settings") in LOAD_PATH
     @test _build_path("code") in LOAD_PATH
     @test _build_path("code/sub-dir1") in LOAD_PATH
     @test _build_path("code/sub-dir1/sub-dir2") in LOAD_PATH
 
-    delete_project()
+    delete_project(false)
 end
 
 
