@@ -19,10 +19,11 @@ end
 
 
 function post_dict(params_dict::Dict{Symbol, Union{Float64, Int64, String}}, dict::Dict, headers::Dict{String, String}) :: Dict{String, Int64}
+    dict_new::Dict{String, Int64} = Dict()
     for key in keys(dict)
-        dict[key] = params_dict[:value]
+        dict_new[string(key)] = params_dict[:value]
     end
-    return dict
+    return dict_new
 end
 
 

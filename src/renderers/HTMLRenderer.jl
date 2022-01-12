@@ -1,7 +1,7 @@
 module HTMLRenderer
 
 import DataFrames
-import JSON
+import JSON3
 
 import Dance.Configuration
 import Dance.Logger
@@ -17,9 +17,9 @@ function populate(;html_file::String="", data::Union{DataFrames.DataFrame, Dict,
     output_data::String = ""
 
     if isa(data, DataFrames.DataFrame)
-        output_data = JSON.json(PayloadUtils.convert_dataframe_to_array(data))
+        output_data = JSON3.write(PayloadUtils.convert_dataframe_to_array(data))
     elseif isa(data, Dict)
-        output_data = JSON.json(data)
+        output_data = JSON3.write(data)
     else
         output_data = data
     end

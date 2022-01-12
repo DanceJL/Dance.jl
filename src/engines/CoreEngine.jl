@@ -1,7 +1,7 @@
 module CoreEngine
 
 import DataFrames
-import JSON
+import JSON3
 
 import Dance.Configuration
 import Dance.CoreRenderer
@@ -86,11 +86,11 @@ function process_backend_function(;route::Router.Route, route_segments::Array{St
     if route.endpoint==Router.EP_JSON && length(payload)>0
         can_proceed::Bool = false
         try
-            json_decoded_data::Union{Array{Any,1}, Dict} = JSON.parse(payload)
-            if isa(json_decoded_data, Array{Any,1})
+            json_decoded_data::Union{JSON3.Array, JSON3.Object} = JSON3.read(payload)
+            if isa(json_decoded_data, JSON3.Array)
                 received_data = PayloadUtils.convert_array_to_dataframe(json_decoded_data)
             else
-                received_data = json_decoded_data
+                received_data = Dict(json_decoded_data)
             end
             can_proceed = true
         catch e
@@ -269,6 +269,7 @@ function render(;request_headers::Dict{String, String}, request_method::String, 
 
     ## Automaticlly set `Content-Type` Header ##
     rendered_dict[:headers]["Content-Type"] = rendered_dict[:content_type]
+    rendered_dict[:headers]["Content-Length"] = string(sizeof(rendered_dict[:body]))
 
     return respond(;
         headers=rendered_dict[:headers], status_code=rendered_dict[:status_code], body=rendered_dict[:body]

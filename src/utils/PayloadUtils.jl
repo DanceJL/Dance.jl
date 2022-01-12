@@ -1,6 +1,7 @@
 module PayloadUtils
 
 import DataFrames
+import JSON3
 
 
 """
@@ -8,7 +9,7 @@ import DataFrames
 
 Convert Array{Any,1} to DataFrame
 """
-function convert_array_to_dataframe(array::Array{Any,1}) :: DataFrames.DataFrame
+function convert_array_to_dataframe(array::JSON3.Array) :: DataFrames.DataFrame
     df::DataFrames.DataFrame = DataFrames.DataFrame()
 
     namelist::Array = Symbol.(array[1])

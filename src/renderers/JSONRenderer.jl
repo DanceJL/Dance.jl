@@ -1,7 +1,7 @@
 module JSONRenderer
 
 import DataFrames
-import JSON
+import JSON3
 
 import Dance.Configuration
 import Dance.Logger
@@ -66,7 +66,7 @@ function render(;headers::Dict{String, String}, status_code::Int16, data::Union{
         :headers => headers,
         :status_code => status_code,
         :content_type => "application/json",
-        :body => JSON.json(body)
+        :body => JSON3.write(body)
     )
 end
 
