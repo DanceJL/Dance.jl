@@ -1,7 +1,7 @@
 name = "Dance"
 uuid = "fc0ff973-d74e-417c-9681-260383068f65"
 authors = ["Chris \"Yoh\" Meyers <48554065+yoh-meyers@users.noreply.github.com>"]
-version = "0.2.3"
+version = "0.2.4"
 
 [deps]
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
